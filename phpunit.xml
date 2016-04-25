@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="true">
+	<testsuites>
+	<testsuite name="Unit_Test">
+            <directory>./src/Vantiv/Test/unit/</directory>
+        </testsuite>
+        <testsuite name="Functional_Test">
+            <directory>./src/Vantiv/Test/functional/</directory>
+        </testsuite>
+        <testsuite name="Certification_Test">
+            <directory>./src/Vantiv/Test/certification/</directory>
+        </testsuite>
+	</testsuites>
+</phpunit>

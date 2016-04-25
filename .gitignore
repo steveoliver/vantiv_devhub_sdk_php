@@ -1,0 +1,5 @@
+# Ignore Composer managed files.
+vendor
+
+# Ignore test coverage results.
+coverage/

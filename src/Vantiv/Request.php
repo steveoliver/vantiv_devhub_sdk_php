@@ -1,0 +1,202 @@
+<?php
+/**
+ * @file
+ * Contains the Vantiv\Request class.
+ */
+
+namespace Vantiv;
+
+class Request {
+
+  public $config = array();
+  public $uri = '';
+  public $category = '';
+  public $proxy = '';
+  public $endpoint = '';
+  public $method = '';
+  public $query = array();
+  public $body = array();
+
+  /**
+   * Request constructor.
+   *
+   * @param array $config Configuration for the request, expecting these keys:
+   *   - 'api_version': The API version, i.e. '1'.
+   *   - 'base_url': The API base url, i.e. 'https://apis.cert.vantiv.com'.
+   *   - 'license': The application license key obtained from DevHub.
+   *
+   * @throws \Exception When any of the required keys above are missing.
+   */
+  function __construct($config = array()) {
+    if (empty($config['api_version'])) {
+      throw new \Exception('Error: missing api_version. Please initialize this Request with a valid api_version.');
+    }
+    if (empty($config['base_url'])) {
+      throw new \Exception('Error: missing base_url. Please initialize this Request with a valid base_url.');
+    }
+    if (empty($config['license'])) {
+      throw new \Exception('Error: missing license. Please initialize this Request with a valid license.');
+    }
+    $this->config = $config;
+  }
+
+  /**
+   * Sets the transaction type from multiple request parameters at once.
+   *
+   * @param string $category
+   * @param string $proxy
+   * @param string $endpoint
+   * @param string $method
+   * @param array $query
+   *
+   * @return $this
+   */
+  public function setTransactionType($category, $proxy, $endpoint, $method, $query) {
+    $this
+      ->setCategory($category)
+      ->setProxy($proxy)
+      ->setEndpoint($endpoint)
+      ->setMethod($method)
+      ->setQuery($query)
+      ->constructUri();
+    return $this;
+  }
+
+  /**
+   * Constructs this instance's uri property from the current config and values.
+   *
+   * @return $this
+   */
+  public function constructUri() {
+    $this->uri = implode('/', array(
+      $this->config['base_url'],
+      $this->category,
+      'sp2',
+      $this->proxy,
+      'v' . $this->config['api_version'],
+      $this->endpoint
+    ));
+    // GET requests append query to string.
+    if ($this->method == 'GET' && !empty($this->query)) {
+      $this->uri .= '?' . http_build_query($this->query);
+    }
+    return $this;
+  }
+
+  /**
+   * Sets the API category property.
+   *
+   * @param string $category
+   *   The category, e.g. 'payment', 'boarding', etc.
+   *
+   * @return $this
+   */
+  public function setCategory($category) {
+    $this->category = $category;
+    return $this;
+  }
+
+  /**
+   * Sets the API proxy property.
+   *
+   * @param string $proxy
+   *   The proxy, e.g. 'credit', 'check', 'services', etc.
+   *
+   * @return $this
+   */
+  public function setProxy($proxy) {
+    $this->proxy = $proxy;
+    return $this;
+  }
+
+  /**
+   * Sets the API endpoint property.
+   *
+   * @param string $endpoint
+   *   The endpoint, e.g. 'authorization', 'authorizationCompletion', 'credit',
+   *   'sale', 'return', 'void', 'force', 'reversal', 'verification', etc.
+   *
+   * @return $this
+   */
+  public function setEndpoint($endpoint) {
+    $this->endpoint = $endpoint;
+    return $this;
+  }
+
+  /**
+   * Sets the HTTP request method.
+   *
+   * @param string $method
+   *   The HTTP method of the request.
+   *
+   * @return $this
+   */
+  public function setMethod($method) {
+    $this->method = $method;
+    return $this;
+  }
+
+  /**
+   * Sets the API query property.
+   *
+   * @param array $query
+   *   Query parameters to send with the request.
+   *
+   * @return $this
+   */
+  public function setQuery($query) {
+    $this->query = $query;
+    return $this;
+  }
+
+  /**
+   * Delivers a request to the Vantiv DevHub REST API.
+   *
+   * @param array $body
+   *   The request body.
+   * @param string $category
+   * @param string $proxy
+   * @param string $endpoint
+   * @param string $method
+   * @param array $query
+   * @return array Information about the request with the following keys:
+   *   - 'response' The HTTP response body (JSON string).
+   *   - 'http_code' The HTTP response status code.
+   */
+  public function send($body = [], $category = NULL, $proxy = NULL, $endpoint = NULL, $method = NULL, $query = []) {
+    $this->body = $body;
+    if (func_num_args() > 1) {
+      $this->setTransactionType($category, $proxy, $endpoint, $method, $query);
+    }
+    else {
+      $this->constructUri();
+    }
+
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+      'Authorization: VANTIV license="' . $this->config['license'] . '"',
+      'Content-Type: application/json',
+      'Accept: application/json'
+    ));
+
+    if ($this->method != 'GET') {
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $this->method);
+      $fields = $this->body;
+      if (!empty($this->query)) {
+        $fields = array_merge($fields, $this->query);
+      }
+      curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+    }
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_URL, $this->uri);
+
+    $response = curl_exec($ch);
+
+    return [
+      'response' => $response,
+      'http_code' => curl_getinfo($ch, CURLINFO_HTTP_CODE)
+    ];
+  }
+}
