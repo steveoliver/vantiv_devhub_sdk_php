@@ -3,3 +3,9 @@ vendor
 
 # Ignore test coverage results.
 coverage/
+
+# Ignore test configuration files.
+src/Vantiv/Test/config.ini
+
+# Ignore DevHub test results.
+devhubresults*
