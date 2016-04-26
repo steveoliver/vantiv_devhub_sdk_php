@@ -431,7 +431,7 @@ class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
       ],
       // Reverses 100.00 of the 205.00 authorization.
       // Supposedly (according to LitleXML docs), AMEX doesn't support partial
-      // authorization reversals.  I don't know why this seens to work.
+      // authorization reversals.  I don't know why this seems to work.
       'AuthorizationReversal5' => [
         'Credentials' => [
           'AcceptorID' => '1147003'
