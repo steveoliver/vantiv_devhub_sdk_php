@@ -6,8 +6,8 @@
 
 namespace Vantiv\Test\certification;
 
-use Vantiv\Test\Config;
 use Vantiv\Request;
+use Vantiv\Test\Config;
 
 class SaleTest extends \PHPUnit_Framework_TestCase {
 
