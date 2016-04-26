@@ -12,6 +12,8 @@ use Vantiv\Request;
 class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
+  private static $prefix = 'L_AR_';
+  private static $outfile = 'devhubresults_L_AR.txt';
 
   public function __construct() {
     $config = new Config();
@@ -19,7 +21,10 @@ class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
   }
 
   public static function setUpBeforeClass() {
-    file_put_contents('devhubresults_L_AR.txt', 'Test results for L_AR_* test suite.' . PHP_EOL . str_repeat('=', 44) . PHP_EOL);
+    file_put_contents(
+      self::$outfile,
+      'Test results for ' . self::$prefix . '* test suite.' . PHP_EOL . str_repeat('=', 44) . PHP_EOL
+    );
   }
 
   public function test_L_AR_1() {
@@ -30,7 +35,7 @@ class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
     $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents('devhubresults_L_AR.txt', 'L_AR_1,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '1,' . $response->RequestID . PHP_EOL, FILE_APPEND);
     return $response->litleOnlineResponse->authorizationResponse->TransactionID;
   }
 
@@ -46,7 +51,7 @@ class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
     $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents('devhubresults_L_AR.txt', 'L_AR_1A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '1A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   /**
@@ -61,7 +66,7 @@ class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(001, $response->litleOnlineResponse->authReversalResponse->response);
     $this->assertEquals('Transaction Received', $response->litleOnlineResponse->authReversalResponse->message);
-    file_put_contents('devhubresults_L_AR.txt', 'L_AR_1B,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '1B,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   public function test_L_AR_2() {
@@ -72,7 +77,7 @@ class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
     $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents('devhubresults_L_AR.txt', 'L_AR_2,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '2,' . $response->RequestID . PHP_EOL, FILE_APPEND);
     return $response->litleOnlineResponse->authorizationResponse->TransactionID;
   }
 
@@ -88,7 +93,7 @@ class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(001, $response->litleOnlineResponse->authReversalResponse->response);
     $this->assertEquals('Transaction Received', $response->litleOnlineResponse->authReversalResponse->message);
-    file_put_contents('devhubresults_L_AR.txt', 'L_AR_2A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '2A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   public function test_L_AR_3() {
@@ -99,7 +104,7 @@ class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
     $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents('devhubresults_L_AR.txt', 'L_AR_3,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '3,' . $response->RequestID . PHP_EOL, FILE_APPEND);
     return $response->litleOnlineResponse->authorizationResponse->TransactionID;
   }
 
@@ -115,7 +120,7 @@ class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(000, $response->litleOnlineResponse->authReversalResponse->response);
     $this->assertEquals('Approved', $response->litleOnlineResponse->authReversalResponse->message);
-    file_put_contents('devhubresults_L_AR.txt', 'L_AR_3A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '3A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   public function test_L_AR_4() {
@@ -126,7 +131,7 @@ class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
     $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents('devhubresults_L_AR.txt', 'L_AR_4,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '4,' . $response->RequestID . PHP_EOL, FILE_APPEND);
     return $response->litleOnlineResponse->authorizationResponse->TransactionID;
   }
 
@@ -142,7 +147,7 @@ class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
     $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents('devhubresults_L_AR.txt', 'L_AR_4A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '4A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   /**
@@ -157,7 +162,7 @@ class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(001, $response->litleOnlineResponse->authReversalResponse->response);
     $this->assertEquals('Transaction Received', $response->litleOnlineResponse->authReversalResponse->message);
-    file_put_contents('devhubresults_L_AR.txt', 'L_AR_4B,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '4B,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   public function test_L_AR_5() {
@@ -168,7 +173,7 @@ class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
     $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents('devhubresults_L_AR.txt', 'L_AR_5,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '5,' . $response->RequestID . PHP_EOL, FILE_APPEND);
     return $response->litleOnlineResponse->authorizationResponse->TransactionID;
   }
 
@@ -184,7 +189,7 @@ class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(001, $response->litleOnlineResponse->authReversalResponse->response);
     $this->assertEquals('Transaction Received', $response->litleOnlineResponse->authReversalResponse->message);
-    file_put_contents('devhubresults_L_AR.txt', 'L_AR_5A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '5A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   /**

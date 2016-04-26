@@ -12,6 +12,8 @@ use Vantiv\Request;
 class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
+  private static $prefix = 'L_AC_';
+  private static $outfile = 'devhubresults_L_AC.txt';
 
   public function __construct() {
     $config = new Config();
@@ -19,7 +21,10 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
   }
 
   public static function setUpBeforeClass() {
-    file_put_contents('devhubresults_L_AC.txt', 'Test results for L_AC_* test suite.' . PHP_EOL . str_repeat('=', 44) . PHP_EOL);
+    file_put_contents(
+      self::$outfile,
+      'Test results for ' . self::$prefix . '* test suite.' . PHP_EOL . str_repeat('=', 44) . PHP_EOL
+    );
   }
 
   public function test_L_AC_1() {
@@ -29,7 +34,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
     $response = json_decode($result['response']);
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    file_put_contents('devhubresults_L_AC.txt', 'L_AC_1,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '1,' . $response->RequestID . PHP_EOL, FILE_APPEND);
     return $response->litleOnlineResponse->authorizationResponse->TransactionID;
   }
 
@@ -45,7 +50,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
     $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents('devhubresults_L_AC.txt', 'L_AC_1A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '1A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   public function test_L_AC_2() {
@@ -55,7 +60,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
     $response = json_decode($result['response']);
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    file_put_contents('devhubresults_L_AC.txt', 'L_AC_2,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '2,' . $response->RequestID . PHP_EOL, FILE_APPEND);
     return $response->litleOnlineResponse->authorizationResponse->TransactionID;
   }
 
@@ -71,7 +76,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
     $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents('devhubresults_L_AC.txt', 'L_AC_2A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '2A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   public function test_L_AC_3() {
@@ -81,7 +86,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
     $response = json_decode($result['response']);
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    file_put_contents('devhubresults_L_AC.txt', 'L_AC_3,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '3,' . $response->RequestID . PHP_EOL, FILE_APPEND);
     return $response->litleOnlineResponse->authorizationResponse->TransactionID;
   }
 
@@ -97,7 +102,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
     $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents('devhubresults_L_AC.txt', 'L_AC_3A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '3A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   public function test_L_AC_4() {
@@ -107,7 +112,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
     $response = json_decode($result['response']);
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    file_put_contents('devhubresults_L_AC.txt', 'L_AC_4,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '4,' . $response->RequestID . PHP_EOL, FILE_APPEND);
     return $response->litleOnlineResponse->authorizationResponse->TransactionID;
   }
 
@@ -123,7 +128,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
     $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents('devhubresults_L_AC.txt', 'L_AC_4A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '4A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   public function test_L_AC_5() {
@@ -133,7 +138,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
     $response = json_decode($result['response']);
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    file_put_contents('devhubresults_L_AC.txt', 'L_AC_5,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '5,' . $response->RequestID . PHP_EOL, FILE_APPEND);
     return $response->litleOnlineResponse->authorizationResponse->TransactionID;
   }
 
@@ -149,7 +154,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
     $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents('devhubresults_L_AC.txt', 'L_AC_5A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '5A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   public function test_L_AC_6() {
@@ -160,7 +165,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(110, $response->litleOnlineResponse->authorizationResponse->response);
     $this->assertEquals('Insufficient Funds', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents('devhubresults_L_AC.txt', 'L_AC_6,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '6,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   public function test_L_AC_7() {
@@ -171,7 +176,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(301, $response->litleOnlineResponse->authorizationResponse->response);
     $this->assertEquals('Invalid Account Number', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents('devhubresults_L_AC.txt', 'L_AC_7,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '7,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   public function test_L_AC_8() {
@@ -182,7 +187,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(123, $response->litleOnlineResponse->authorizationResponse->response);
     $this->assertEquals('Call Discover', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents('devhubresults_L_AC.txt', 'L_AC_8,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '8,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   public function test_L_AC_9() {
@@ -193,7 +198,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals(200, $result['http_code']);
     $this->assertEquals(303, $response->litleOnlineResponse->authorizationResponse->response);
     $this->assertEquals('Pick Up Card', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents('devhubresults_L_AC.txt', 'L_AC_9,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    file_put_contents(self::$outfile, self::$prefix . '9,' . $response->RequestID . PHP_EOL, FILE_APPEND);
   }
 
   /**
