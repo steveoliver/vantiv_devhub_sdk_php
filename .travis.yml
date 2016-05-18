@@ -1,0 +1,35 @@
+# @file
+# .travis.yml - Drupal for Travis CI Integration
+
+language: php
+
+sudo: false
+
+php:
+  - 5.5
+  - 5.6
+  - 7
+  - hhvm
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - php: hhvm
+
+env:
+  global:
+    # add composer's global bin directory to the path
+    - PATH="$PATH:$HOME/.composer/vendor/bin"
+
+before_install:
+  - composer self-update
+
+install:
+  - composer install
+
+script:
+  - phpunit --testsuite=Unit_Test
+
+notifications:
+  email: false
+
