@@ -23,14 +23,13 @@ env:
 
 before_install:
   - composer self-update
-  - composer require satooshi/php-coveralls
   - mkdir -p build/logs
 
 install:
   - composer install
 
 script:
-  - phpunit --testsuite=Unit_Test --coverage-clover build/logs/clover.xml
+  - phpunit --testsuite=Unit_Test
 
 notifications:
   email: true

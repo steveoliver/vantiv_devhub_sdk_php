@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit colors="true" bootstrap="./vendor/autoload.php">
+  <testsuites>
+	  <testsuite name="Unit_Test">
+      <directory>./src/Vantiv/Test/unit/</directory>
+    </testsuite>
+    <testsuite name="Functional_Test">
+      <directory>./src/Vantiv/Test/functional/</directory>
+    </testsuite>
+    <testsuite name="Certification_Test">
+      <directory>./src/Vantiv/Test/certification/</directory>
+    </testsuite>
+  </testsuites>
+  <logging>
+    <log type="coverage-clover" target="build/logs/clover.xml"/>
+  </logging>
+  <!-- Filter for coverage reports. -->
+  <filter>
+    <blacklist>
+      <directory>./vendor</directory>
+    </blacklist>
+    <whitelist>
+      <directory>src</directory>
+    </whitelist>
+  </filter>
+</phpunit>
