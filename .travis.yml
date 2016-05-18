@@ -31,5 +31,5 @@ script:
   - phpunit --testsuite=Unit_Test
 
 notifications:
-  email: false
+  email: true
 
