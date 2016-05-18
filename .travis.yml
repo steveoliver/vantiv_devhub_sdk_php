@@ -23,12 +23,13 @@ env:
 
 before_install:
   - composer self-update
+  - mkdir -p build/logs
 
 install:
   - composer install
 
 script:
-  - phpunit --testsuite=Unit_Test
+  - phpunit --testsuite=Unit_Test --coverage-clover build/logs/clover.xml
 
 notifications:
   email: true

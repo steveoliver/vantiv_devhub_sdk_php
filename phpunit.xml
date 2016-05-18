@@ -11,4 +11,13 @@
             <directory>./src/Vantiv/Test/certification/</directory>
         </testsuite>
 	</testsuites>
+  <!-- Filter for coverage reports. -->
+  <filter>
+    <blacklist>
+      <directory>./vendor</directory>
+    </blacklist>
+    <whitelist>
+      <directory>src</directory>
+    </whitelist>
+  </filter>
 </phpunit>
