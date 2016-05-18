@@ -1,6 +1,6 @@
 # Vantiv DevHub PHP SDK
 
-[![Build Status](https://travis-ci.org/steveoliver/vantiv_devhub_sdk_php.svg?branch=master)](https://travis-ci.org/steveoliver/vantiv_devhub_sdk_php)
+[![Build Status](https://travis-ci.org/steveoliver/vantiv_devhub_sdk_php.svg?branch=master)](https://travis-ci.org/steveoliver/vantiv_devhub_sdk_php) [![Coverage Status](https://coveralls.io/repos/github/steveoliver/vantiv_devhub_sdk_php/badge.svg?branch=master)](https://coveralls.io/github/steveoliver/vantiv_devhub_sdk_php?branch=master)
 
 This repository contains a PHP implementation of the Vantiv DevHub API.
 
