@@ -23,6 +23,7 @@ env:
 
 before_install:
   - composer self-update
+  - composer require satooshi/php-coveralls
   - mkdir -p build/logs
 
 install:
