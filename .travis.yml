@@ -30,6 +30,7 @@ install:
 
 script:
   - phpunit --testsuite=Unit_Test
+  - coveralls -v
 
 notifications:
   email: true
