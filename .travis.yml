@@ -23,7 +23,6 @@ env:
 
 before_install:
   - composer self-update
-  - cd tests
   - mkdir -p build/logs
 
 install:
