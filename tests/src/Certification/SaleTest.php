@@ -4,7 +4,7 @@
  * Sale (auth+capture) certification tests (L_S_*).
  */
 
-namespace Vantiv\Test\certification;
+namespace Vantiv\Test\Certification;
 
 use Vantiv\Request;
 use Vantiv\Test\Config;
@@ -13,7 +13,7 @@ class SaleTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
   private static $prefix = 'L_S_';
-  private static $outfile = 'devhubresults_L_S.txt';
+  private static $outfile = 'build/logs/devhubresults_L_S.txt';
 
   public function __construct() {
     $config = new Config();

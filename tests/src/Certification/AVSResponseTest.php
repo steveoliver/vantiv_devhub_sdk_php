@@ -4,7 +4,7 @@
  * Address Responses certification tests (L_ADR_*).
  */
 
-namespace Vantiv\Test\certification;
+namespace Vantiv\Test\Certification;
 
 use Vantiv\Request;
 use Vantiv\Test\Config;
@@ -13,7 +13,7 @@ class AVSResponseTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
   private static $prefix = 'L_ADR_';
-  private static $outfile = 'devhubresults_L_ADR.txt';
+  private static $outfile = 'build/logs/devhubresults_L_ADR.txt';
 
   public function __construct() {
     $config = new Config();

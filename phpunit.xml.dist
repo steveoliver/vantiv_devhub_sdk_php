@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit colors="true" bootstrap="./vendor/autoload.php">
   <testsuites>
-	  <testsuite name="Unit_Test">
-      <directory>./src/Vantiv/Test/unit/</directory>
+    <testsuite name="Unit_Test">
+      <directory>./tests/src/Unit/</directory>
     </testsuite>
     <testsuite name="Functional_Test">
-      <directory>./src/Vantiv/Test/functional/</directory>
+      <directory>./tests/src/Functional/</directory>
     </testsuite>
     <testsuite name="Certification_Test">
-      <directory>./src/Vantiv/Test/certification/</directory>
+      <directory>./tests/src/Certification/</directory>
     </testsuite>
   </testsuites>
   <logging>
@@ -18,6 +18,7 @@
   <filter>
     <blacklist>
       <directory>./vendor</directory>
+      <directory>./tests</directory>
     </blacklist>
     <whitelist>
       <directory>src</directory>

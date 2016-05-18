@@ -4,7 +4,7 @@
  * Authorization and capture certification tests (L_AC_*).
  */
 
-namespace Vantiv\Test\certification;
+namespace Vantiv\Test\Certification;
 
 use Vantiv\Request;
 use Vantiv\Test\Config;
@@ -13,7 +13,7 @@ class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
   private static $prefix = 'L_AC_';
-  private static $outfile = 'devhubresults_L_AC.txt';
+  private static $outfile = 'build/logs/devhubresults_L_AC.txt';
 
   public function __construct() {
     $config = new Config();

@@ -4,7 +4,7 @@
  * AVS and Card Validation certification tests (L_AVSCV_*).
  */
 
-namespace Vantiv\Test\certification;
+namespace Vantiv\Test\Certification;
 
 use Vantiv\Request;
 use Vantiv\Test\Config;
@@ -13,7 +13,7 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
   private static $prefix = 'L_AVSCV_';
-  private static $outfile = 'devhubresults_L_AVSCV.txt';
+  private static $outfile = 'build/logs/devhubresults_L_AVSCV.txt';
 
   public function __construct() {
     $config = new Config();

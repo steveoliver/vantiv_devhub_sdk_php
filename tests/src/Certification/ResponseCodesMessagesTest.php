@@ -4,7 +4,7 @@
  * Response Reason Codes and Messages certification tests (L_RRC_*).
  */
 
-namespace Vantiv\Test\certification;
+namespace Vantiv\Test\Certification;
 
 use Vantiv\Request;
 use Vantiv\Test\Config;
@@ -13,7 +13,7 @@ class ResponseCodesMessagesTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
   private static $prefix = 'L_RRC_';
-  private static $outfile = 'devhubresults_L_RRC.txt';
+  private static $outfile = 'build/logs/devhubresults_L_RRC.txt';
 
   public function __construct() {
     $config = new Config();

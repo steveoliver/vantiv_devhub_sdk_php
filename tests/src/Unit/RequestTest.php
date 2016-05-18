@@ -4,7 +4,7 @@
  * Unit tests for the Vantiv\Request class.
  */
 
-namespace Vantiv\Test\unit;
+namespace Vantiv\Test\Unit;
 
 use Vantiv\Request;
 

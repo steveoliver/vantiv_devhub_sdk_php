@@ -9,9 +9,13 @@ This repository contains a PHP implementation of the Vantiv DevHub API.
  - Optional: configure php with xdebug for code coverage analysis.
 
 ## Testing
-  - Copy ```src/Vantiv/Test/example.config.ini``` to ```src/Vantiv/Test/config.ini``` and edit with your application's license key.
-  - Run tests with ```./vendor/bin/phpunit``` or ```./vendor/bin/phpunit --coverage-html=coverage```
-  - See devhubresults*.txt files for the results of DevHub certification tests.
+### Unit testing
+  - Run ```./vendor/bin/phpunit --testsuite Unit_Test```, optionally with xdebug enabled to generate code coverage reports in build/logs/clover.xml.
+
+### Certification testing
+  - Copy ```tests/src/example.config.ini``` to ```tests/src/config.ini``` and edit with your application's license key.
+  - Run tests with ```./vendor/bin/phpunit```, optionally with xdebug enabled to generate code coverage reports in builds/logs/clover.xml.
+  - See build/logs/devhubresults*.txt files for the results of DevHub certification tests.
 
 ## Usage
  - Instantiate a ```Vantiv\Request``` object with an array of config parameters:

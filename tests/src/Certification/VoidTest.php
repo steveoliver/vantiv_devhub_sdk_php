@@ -4,7 +4,7 @@
  * Void certification tests (L_V_*).
  */
 
-namespace Vantiv\Test\certification;
+namespace Vantiv\Test\Certification;
 
 use Vantiv\Request;
 use Vantiv\Test\Config;
@@ -13,7 +13,7 @@ class VoidTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
   private static $prefix = 'L_V_';
-  private static $outfile = 'devhubresults_L_V.txt';
+  private static $outfile = 'build/logs/devhubresults_L_V.txt';
 
   public function __construct() {
     $config = new Config();

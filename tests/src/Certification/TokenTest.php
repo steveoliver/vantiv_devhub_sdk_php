@@ -4,7 +4,7 @@
  * Tokenization certification tests (L_T_*).
  */
 
-namespace Vantiv\Test\certification;
+namespace Vantiv\Test\Certification;
 
 use Vantiv\Request;
 use Vantiv\Test\Config;
@@ -13,7 +13,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
   private static $prefix = 'L_T_';
-  private static $outfile = 'devhubresults_L_T.txt';
+  private static $outfile = 'build/logs/devhubresults_L_T.txt';
 
   public function __construct() {
     $config = new Config();

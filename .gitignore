@@ -1,11 +1,8 @@
 # Ignore Composer managed files.
 vendor
 
-# Ignore test coverage results.
-coverage/
+# Ignore build/test artifacts
+build
 
-# Ignore test configuration files.
-src/Vantiv/Test/config.ini
-
-# Ignore DevHub test results.
-devhubresults*
+# Ignore local Vantiv\Config ini file
+tests/src/config.ini
