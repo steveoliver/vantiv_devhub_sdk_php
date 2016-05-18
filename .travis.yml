@@ -28,7 +28,7 @@ install:
   - composer install
 
 script:
-  - ./vendor/bin/phpunit --testsuite=Unit_Test
+  - phpunit --testsuite=Unit_Test
 
 notifications:
   email: true
