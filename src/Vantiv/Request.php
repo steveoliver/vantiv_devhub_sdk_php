@@ -8,14 +8,14 @@ namespace Vantiv;
 
 class Request {
 
-  public $config = array();
-  public $uri = '';
-  public $category = '';
-  public $proxy = '';
-  public $endpoint = '';
-  public $method = '';
-  public $query = array();
-  public $body = array();
+  private $config = array();
+  private $uri = '';
+  private $category = '';
+  private $proxy = '';
+  private $endpoint = '';
+  private $method = '';
+  private $query = array();
+  private $body = array();
 
   /**
    * Request constructor.
@@ -84,6 +84,15 @@ class Request {
   }
 
   /**
+   * Gets the uri property.
+   *
+   * @return string
+   */
+  public function getUri() {
+    return $this->uri;
+  }
+
+  /**
    * Sets the API category property.
    *
    * @param string $category
@@ -97,6 +106,15 @@ class Request {
   }
 
   /**
+   * Gets the API category property.
+   *
+   * @return string
+   */
+  public function getCategory() {
+    return $this->category;
+  }
+
+  /**
    * Sets the API proxy property.
    *
    * @param string $proxy
@@ -107,6 +125,15 @@ class Request {
   public function setProxy($proxy) {
     $this->proxy = $proxy;
     return $this;
+  }
+
+  /**
+   * Gets the API proxy property.
+   *
+   * @return string
+   */
+  public function getProxy() {
+    return $this->proxy;
   }
 
   /**
@@ -124,6 +151,15 @@ class Request {
   }
 
   /**
+   * Gets the API endpoint property.
+   *
+   * @return string
+   */
+  public function getEndpoint() {
+    return $this->endpoint;
+  }
+
+  /**
    * Sets the HTTP request method.
    *
    * @param string $method
@@ -137,6 +173,15 @@ class Request {
   }
 
   /**
+   * Gets the API method property.
+   *
+   * @return string
+   */
+  public function getMethod() {
+    return $this->method;
+  }
+
+  /**
    * Sets the API query property.
    *
    * @param array $query
@@ -147,6 +192,15 @@ class Request {
   public function setQuery($query) {
     $this->query = $query;
     return $this;
+  }
+
+  /**
+   * Gets the API query property.
+   *
+   * @return string
+   */
+  public function getQuery() {
+    return $this->query;
   }
 
   /**

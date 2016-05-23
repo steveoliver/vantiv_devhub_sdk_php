@@ -22,15 +22,15 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
     $request = new Request($config);
     $request->setTransactionType('payment', 'credit', 'authorization', 'POST', ['val' => 'test']);
 
-    $this->assertEquals($request->category, 'payment');
-    $this->assertEquals($request->proxy, 'credit');
-    $this->assertEquals($request->endpoint, 'authorization');
-    $this->assertEquals($request->method, 'POST');
-    $this->assertEquals($request->query['val'], 'test');
+    $this->assertEquals($request->getCategory(), 'payment');
+    $this->assertEquals($request->getProxy(), 'credit');
+    $this->assertEquals($request->getEndpoint(), 'authorization');
+    $this->assertEquals($request->getMethod(), 'POST');
+    $this->assertEquals($request->getQuery()['val'], 'test');
 
     $request->constructUri();
     $expected_uri = $config['base_url'] . '/payment/sp2/credit/v' . $config['api_version'] . '/authorization';
-    $this->assertEquals($request->uri, $expected_uri);
+    $this->assertEquals($request->getUri(), $expected_uri);
   }
 
   public function testQueryStringGet() {
@@ -42,15 +42,15 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
     $request = new Request($config);
     $request->setTransactionType('payment', 'credit', 'authorization', 'GET', ['val' => 'test', 'foo' => 'bar']);
 
-    $this->assertEquals($request->category, 'payment');
-    $this->assertEquals($request->proxy, 'credit');
-    $this->assertEquals($request->endpoint, 'authorization');
-    $this->assertEquals($request->method, 'GET');
-    $this->assertEquals($request->query['val'], 'test');
+    $this->assertEquals($request->getCategory(), 'payment');
+    $this->assertEquals($request->getProxy(), 'credit');
+    $this->assertEquals($request->getEndpoint(), 'authorization');
+    $this->assertEquals($request->getMethod(), 'GET');
+    $this->assertEquals($request->getQuery()['val'], 'test');
 
     $request->constructUri();
     $expected_uri = $config['base_url'] . '/payment/sp2/credit/v' . $config['api_version'] . '/authorization?val=test&foo=bar';
-    $this->assertEquals($request->uri, $expected_uri);
+    $this->assertEquals($request->getUri(), $expected_uri);
   }
 
   /**
