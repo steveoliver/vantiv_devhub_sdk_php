@@ -7,7 +7,7 @@
 namespace Vantiv\Test\Certification;
 
 use Vantiv\Request;
-use Vantiv\Test\Config;
+use Vantiv\Test\Configuration;
 
 class ResponseCodesMessagesTest extends \PHPUnit_Framework_TestCase {
 
@@ -16,7 +16,7 @@ class ResponseCodesMessagesTest extends \PHPUnit_Framework_TestCase {
   private static $outfile = 'build/logs/devhubresults_L_RRC.txt';
 
   public function __construct() {
-    $config = new Config();
+    $config = new Configuration();
     $this->config = $config->config;
   }
 

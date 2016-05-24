@@ -7,7 +7,7 @@
 namespace Vantiv\Test\Certification;
 
 use Vantiv\Request;
-use Vantiv\Test\Config;
+use Vantiv\Test\Configuration;
 
 class TokenTest extends \PHPUnit_Framework_TestCase {
 
@@ -16,7 +16,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase {
   private static $outfile = 'build/logs/devhubresults_L_T.txt';
 
   public function __construct() {
-    $config = new Config();
+    $config = new Configuration();
     $this->config = $config->config;
   }
 

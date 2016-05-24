@@ -7,7 +7,7 @@
 namespace Vantiv\Test\Certification;
 
 use Vantiv\Request;
-use Vantiv\Test\Config;
+use Vantiv\Test\Configuration;
 
 class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
 
@@ -16,7 +16,7 @@ class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
   private static $outfile = 'build/logs/devhubresults_L_RC.txt';
 
   public function __construct() {
-    $config = new Config();
+    $config = new Configuration();
     $this->config = $config->config;
   }
 
@@ -749,5 +749,8 @@ class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
     ];
 
     return $key ? $set[$key] : $set;
+  }
+
+  public function test() {
   }
 }

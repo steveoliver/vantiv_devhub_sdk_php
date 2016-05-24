@@ -4,5 +4,5 @@ vendor
 # Ignore build/test artifacts
 build
 
-# Ignore local Vantiv\Config ini file
-tests/src/config.ini
+# Ignore local test config.ini file
+tests/config.ini
