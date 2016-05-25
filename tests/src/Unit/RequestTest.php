@@ -72,7 +72,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
   public function testSendPost() {
     $request = new Request($this->_config);
 
-    $result = $request->send([], 'payment', 'credit', 'sale', 'POST', []);
+    $result = $request->send([], 'payment', 'credit', 'sale', 'POST', ['foo' => 'bar']);
     $this->assertEquals($result['response'], FALSE);
     $this->assertEquals($result['http_code'], 0);
   }
