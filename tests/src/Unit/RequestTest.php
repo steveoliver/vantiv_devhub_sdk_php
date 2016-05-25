@@ -60,7 +60,13 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
   }
 
   public function testSend() {
+    $request = new Request($this->_config);
 
+    $request->setTransactionType('payment', 'credit', 'authorization', 'GET', []);
+
+    $result = $request->send([]);
+    $this->assertEquals($result['response'], FALSE);
+    $this->assertEquals($result['http_code'], 0);
   }
 
 }
