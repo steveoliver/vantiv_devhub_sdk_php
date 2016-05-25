@@ -59,12 +59,20 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($request->getUri(), $expected_uri);
   }
 
-  public function testSend() {
+  public function testSendGet() {
     $request = new Request($this->_config);
 
     $request->setTransactionType('payment', 'credit', 'authorization', 'GET', []);
 
     $result = $request->send([]);
+    $this->assertEquals($result['response'], FALSE);
+    $this->assertEquals($result['http_code'], 0);
+  }
+
+  public function testSendPost() {
+    $request = new Request($this->_config);
+
+    $result = $request->send([], 'payment', 'credit', 'sale', 'POST', []);
     $this->assertEquals($result['response'], FALSE);
     $this->assertEquals($result['http_code'], 0);
   }
