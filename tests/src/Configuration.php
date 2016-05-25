@@ -9,7 +9,7 @@ namespace Vantiv\Test;
 use Vantiv\Configuration as TestConfiguration;
 
 class Configuration {
-  
+
   public $config = NULL;
 
   /**
