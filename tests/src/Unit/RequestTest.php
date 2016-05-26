@@ -59,20 +59,107 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($request->getUri(), $expected_uri);
   }
 
+  /**
+   * @expectedException Exception
+   * @expectedExceptionMessage Credentials, Reports, Transaction, Application keys are missing from request.
+   */
+  public function testMissingAllRequiredElements() {
+    $request = new Request($this->_config);
+    $request->setTransactionType('payment', 'credit', 'authorization', 'GET', []);
+    $request->send([]);
+  }
+
+  /**
+   * @expectedException Exception
+   * @expectedExceptionMessage Credentials, Reports keys are missing from request.
+   */
+  public function testMissingSomeRequiredElements() {
+    $request = new Request($this->_config);
+    $request->setTransactionType('payment', 'credit', 'authorization', 'GET', []);
+    $request->send([
+      'Transaction' => [],
+      'Application' => []
+    ]);
+  }
+
   public function testSendGet() {
     $request = new Request($this->_config);
 
     $request->setTransactionType('payment', 'credit', 'authorization', 'GET', []);
 
-    $result = $request->send([]);
+    $result = $request->send([
+      'Credentials' => [
+        'AcceptorID' => '1147003'
+      ],
+      'Reports' => [
+        'ReportGroup' => '1243'
+      ],
+      'Transaction' => [
+        'ReferenceNumber' => '1',
+        'TransactionAmount' => '101.00',
+        'OrderSource' => 'ecommerce',
+        'CustomerID' => '1'
+      ],
+      'Address' => [
+        'BillingName' => 'Mike J. Hammer',
+        'BillingAddress1' => '2 Main St.',
+        'BillingAddress2' => 'Apt. 222',
+        'BillingCity' => 'Riverside',
+        'BillingState' => 'RI',
+        'BillingZipcode' => '02915',
+        'BillingCountry' => 'US'
+      ],
+      'Card' => [
+        'Type' => 'MC',
+        'CardNumber' => '5112010000000003',
+        'ExpirationMonth' => '02',
+        'ExpirationYear' => '16',
+        'CVV' => '261'
+      ],
+      'Application' => [
+        'ApplicationID' => 's12342'
+      ]
+    ]);
     $this->assertEquals($result['response'], FALSE);
     $this->assertEquals($result['http_code'], 0);
   }
 
   public function testSendPost() {
     $request = new Request($this->_config);
-
-    $result = $request->send([], 'payment', 'credit', 'sale', 'POST', ['foo' => 'bar']);
+    $request->setTransactionType('payment', 'credit', 'sale', 'POST', ['foo' => 'bar']);
+    $result = $request->send([
+      'Credentials' => [
+        'AcceptorID' => '1147003'
+      ],
+      'Reports' => [
+        'ReportGroup' => '1243'
+      ],
+      'Transaction' => [
+        'ReferenceNumber' => '1',
+        'TransactionAmount' => '101.00',
+        'OrderSource' => 'ecommerce',
+        'CustomerID' => '1'
+      ],
+      'Address' => [
+        'BillingName' => 'Mike J. Hammer',
+        'BillingAddress1' => '2 Main St.',
+        'BillingAddress2' => 'Apt. 222',
+        'BillingCity' => 'Riverside',
+        'BillingState' => 'RI',
+        'BillingZipcode' => '02915',
+        'BillingCountry' => 'US'
+      ],
+      'Card' => [
+        'Type' => 'MC',
+        'CardNumber' => '5112010000000003',
+        'ExpirationMonth' => '02',
+        'ExpirationYear' => '16',
+        'CVV' => '261'
+      ],
+      'Application' => [
+        'ApplicationID' => 's12342'
+      ]
+    ]);
     $this->assertEquals($result['response'], FALSE);
     $this->assertEquals($result['http_code'], 0);
   }

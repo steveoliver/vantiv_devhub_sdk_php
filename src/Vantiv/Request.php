@@ -6,6 +6,7 @@
 
 namespace Vantiv;
 
+use Exception;
 use Vantiv\Configuration;
 
 class Request {
@@ -26,6 +27,15 @@ class Request {
    */
   function __construct(Configuration $config) {
     $this->config = $config;
+  }
+
+  /**
+   * @return array Required elements for any API request.
+   */
+  public function getRequiredElements() {
+    return [
+      'Credentials', 'Reports', 'Transaction', 'Application'
+    ];
   }
 
   /**
@@ -194,6 +204,7 @@ class Request {
   /**
    * Delivers a request to the Vantiv DevHub REST API.
    *
+   * @throws Exception if not all required elements are set in body.
    * @param array $body
    *   The request body.
    * @param string $category
@@ -206,6 +217,10 @@ class Request {
    *   - 'http_code' The HTTP response status code.
    */
   public function send($body = [], $category = NULL, $proxy = NULL, $endpoint = NULL, $method = NULL, $query = []) {
+    if ($missing_keys = array_diff(self::getRequiredElements(), array_keys($body))) {
+      $missing_keys = implode(', ', array_values($missing_keys));
+      throw new Exception($missing_keys . ' keys are missing from request.');
+    }
     $this->body = $body;
     if (func_num_args() > 1) {
       $this->setTransactionType($category, $proxy, $endpoint, $method, $query);
