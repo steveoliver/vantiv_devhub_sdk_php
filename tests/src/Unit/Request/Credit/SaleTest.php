@@ -17,7 +17,7 @@ class SaleTest extends \PHPUnit_Framework_TestCase {
   protected function setUp() {
     $this->_config = new Configuration([
       'api_version' => '1',
-      'base_url' => 'https://cert.apis.vantiv.com',
+      'base_url' => 'https://apis.cert.vantiv.com',
       'license' => getenv('VANTIV_DEVHUB_LICENSE') ?: 'AAA'
     ]);
   }
