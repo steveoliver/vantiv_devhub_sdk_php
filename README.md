@@ -10,6 +10,7 @@ This repository contains a PHP implementation of the Vantiv DevHub API.
 
 ## Testing
 ### Unit testing
+  - Set environment variable ```VANTIV_DEVHUB_LICENSE``` to a valid Vantiv DevHub license key suitable for testing.
   - Run ```./vendor/bin/phpunit --testsuite Unit_Test```, optionally with xdebug enabled to generate code coverage reports in build/logs/clover.xml.
 
 ### Certification testing
