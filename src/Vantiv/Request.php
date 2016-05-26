@@ -8,6 +8,7 @@ namespace Vantiv;
 
 use Exception;
 use Vantiv\Configuration;
+use Vantiv\Response;
 
 class Request {
 
@@ -212,9 +213,10 @@ class Request {
    * @param string $endpoint
    * @param string $method
    * @param array $query
-   * @return array Information about the request with the following keys:
+   * @return mixed Information about the request with the following keys:
    *   - 'response' The HTTP response body (JSON string).
-   *   - 'http_code' The HTTP response status code.
+   *   - 'http_code' string The HTTP response status code.
+   *     returned through $this->response(), optionally overridden per subclass.
    */
   public function send($body = [], $category = NULL, $proxy = NULL, $endpoint = NULL, $method = NULL, $query = []) {
     if ($missing_keys = array_diff(self::getRequiredElements(), array_keys($body))) {
@@ -251,9 +253,27 @@ class Request {
 
     $response = curl_exec($ch);
 
-    return [
+    return $this->response([
       'response' => $response,
       'http_code' => curl_getinfo($ch, CURLINFO_HTTP_CODE)
+    ]);
+  }
+
+  /**
+   * Response handler.
+   *
+   * @param array $response Information about the response with the following:
+   *   - 'response' The HTTP response body (JSON string).
+   *   - 'http_code' string The HTTP response status code.
+   *
+   * @return array Information about the response with the following keys:
+   *   - 'response' A Vantiv\Response[*] object.
+   *   - 'http_code' string The HTTP response status code.
+   */
+  protected function response(array $response) {
+    return [
+      'response' => new Response($response['response']),
+      'http_code' => $response['http_code']
     ];
   }
 }
