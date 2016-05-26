@@ -159,8 +159,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
       'Application' => [
         'ApplicationID' => 's12342'
       ]
-    ], [
-      'foo' => 'bar'
     ]);
     $this->assertEquals($result['response'], FALSE);
     $this->assertEquals($result['http_code'], 0);
