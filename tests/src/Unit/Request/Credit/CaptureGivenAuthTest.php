@@ -35,4 +35,16 @@ class CaptureGivenAuthTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($request->getMethod(), 'POST');
   }
 
+  public function testResponseObject() {
+    $request = new CaptureGivenAuth($this->_config);
+    $result = $request->send([
+      'Credentials' => [],
+      'Reports' => [],
+      'Transaction' => [],
+      'Application' => []
+    ]);
+    $response = $result['response'];
+    $this->assertInstanceOf('Vantiv\Response\CaptureGivenAuthResponse', $response);
+  }
+
 }

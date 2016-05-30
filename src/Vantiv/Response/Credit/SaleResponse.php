@@ -4,17 +4,17 @@
  * Contains Vantiv\Response\SaleResponse.
  */
 
-namespace Vantiv\Response;
+namespace Vantiv\Response\Credit;
 
 use Vantiv\Response;
 
 class SaleResponse extends Response {
 
   /**
-   * Overrides parent get() method to return the child saleResponse element.
+   * @return stdClass The saleResponse element from a Vantiv response.
    */
-  function get() {
-    $response = parent::get();
+  function getResponse() {
+    $response = parent::getResponse();
     return $response->saleResponse;
   }
 

@@ -7,6 +7,7 @@
 namespace Vantiv\Request\Credit;
 
 use Vantiv\Configuration;
+use Vantiv\Response\Credit\CaptureGivenAuthResponse;
 use Vantiv\Request;
 
 class CaptureGivenAuth extends Request {
@@ -19,6 +20,20 @@ class CaptureGivenAuth extends Request {
       ->setProxy('credit')
       ->setEndpoint('captureGivenAuth')
       ->setMethod('POST');
+  }
+
+  /**
+   * Overrides parent response to return a CaptureGivenAuthResponse object.
+   *
+   * @param $response
+   *
+   * @return array
+   */
+  protected function response(array $response) {
+    return [
+      'response' => new CaptureGivenAuthResponse($response['response']),
+      'http_code' => $response['http_code']
+    ];
   }
 
 }

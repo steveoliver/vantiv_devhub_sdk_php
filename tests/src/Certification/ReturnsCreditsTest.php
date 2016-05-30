@@ -6,42 +6,42 @@
 
 namespace Vantiv\Test\Certification;
 
-use Vantiv\Request;
+use Vantiv\Request\Credit\Authorization;
+use Vantiv\Request\Credit\AuthorizationCompletion;
+use Vantiv\Request\Credit\Credit;
+use Vantiv\Request\Credit\CreditReturn;
+use Vantiv\Request\Credit\Sale;
 use Vantiv\Test\Configuration;
+use Vantiv\Test\DevHubCertificationTestLogger;
 
 class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
-  private static $prefix = 'L_RC_';
-  private static $outfile = 'build/logs/devhubresults_L_RC.txt';
 
   public function __construct() {
     $config = new Configuration();
     $this->config = $config->config;
-  }
-
-  public static function setUpBeforeClass() {
-    file_put_contents(
-      self::$outfile,
-      'Test results for ' . self::$prefix . '* test suite.' . PHP_EOL . str_repeat('=', 44) . PHP_EOL
-    );
+    $prefix = 'L_RC_';
+    $outfile = 'build/logs/devhubresults_L_RC.txt';
+    $this->logger = new DevHubCertificationTestLogger($prefix, $outfile);
   }
 
   /**
    * Tests authorization of Visa with CVV and AVS.
    */
   public function test_L_RC_1() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization1');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('11111 ', $response->litleOnlineResponse->authorizationResponse->authCode);
-    $this->assertEquals('M', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '1,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('11111 ', $response->authCode);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('1', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -50,16 +50,17 @@ class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_RC_1
    */
   public function test_L_RC_1A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new AuthorizationCompletion($this->config);
     $body = $this->data('AuthorizationCompletion1');
     $body['Transaction'] = ['TransactionID' => $TransactionID];
-    $result = $request->send($body, 'payment', 'credit', 'authorizationCompletion', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '1A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->captureResponse->TransactionID;
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('1A', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -68,33 +69,35 @@ class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_RC_1A
    */
   public function test_L_RC_1B($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Credit($this->config);
     $body = $this->data('Credit1');
     $body['Transaction']['TransactionID'] = $TransactionID;
-    $result = $request->send($body, 'payment', 'credit', 'credit', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->creditResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->creditResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '1B,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('1B', $requestID);
   }
 
   /**
    * Tests authorization of MasterCard with CVV and AVS.
    */
   public function test_L_RC_2() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization2');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('22222 ', $response->litleOnlineResponse->authorizationResponse->authCode);
-    $this->assertEquals('M', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(10, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '2,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('22222 ', $response->authCode);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(10, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('2', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -103,16 +106,17 @@ class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_RC_2
    */
   public function test_L_RC_2A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new AuthorizationCompletion($this->config);
     $body = $this->data('AuthorizationCompletion2');
     $body['Transaction'] = ['TransactionID' => $TransactionID];
-    $result = $request->send($body, 'payment', 'credit', 'authorizationCompletion', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '2A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->captureResponse->TransactionID;
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('2A', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -121,33 +125,35 @@ class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_RC_2A
    */
   public function test_L_RC_2B($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Credit($this->config);
     $body = $this->data('Credit2');
     $body['Transaction']['TransactionID'] = $TransactionID;
-    $result = $request->send($body, 'payment', 'credit', 'credit', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->creditResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->creditResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '2B,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('2B', $requestID);
   }
 
   /**
    * Tests authorization of Discover card with CVV and AVS.
    */
   public function test_L_RC_3() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization3');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('33333 ', $response->litleOnlineResponse->authorizationResponse->authCode);
-    $this->assertEquals('M', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(10, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '3,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('33333 ', $response->authCode);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(10, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('3', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -156,16 +162,17 @@ class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_RC_3
    */
   public function test_L_RC_3A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new AuthorizationCompletion($this->config);
     $body = $this->data('AuthorizationCompletion3');
     $body['Transaction'] = ['TransactionID' => $TransactionID];
-    $result = $request->send($body, 'payment', 'credit', 'authorizationCompletion', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '3A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->captureResponse->TransactionID;
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('3A', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -174,32 +181,34 @@ class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_RC_3A
    */
   public function test_L_RC_3B($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Credit($this->config);
     $body = $this->data('Credit3');
     $body['Transaction']['TransactionID'] = $TransactionID;
-    $result = $request->send($body, 'payment', 'credit', 'credit', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->creditResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->creditResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '3B,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('3B', $requestID);
   }
 
   /**
    * Tests authorization of American Express card with AVS without CVV.
    */
   public function test_L_RC_4() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization4');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('44444 ', $response->litleOnlineResponse->authorizationResponse->authCode);
-    $this->assertEquals(13, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '4,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('44444 ', $response->authCode);
+    $this->assertEquals(13, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('4', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -208,16 +217,17 @@ class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_RC_4
    */
   public function test_L_RC_4A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new AuthorizationCompletion($this->config);
     $body = $this->data('AuthorizationCompletion4');
     $body['Transaction'] = ['TransactionID' => $TransactionID];
-    $result = $request->send($body, 'payment', 'credit', 'authorizationCompletion', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '4A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->captureResponse->TransactionID;
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('4A', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -226,33 +236,35 @@ class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_RC_4A
    */
   public function test_L_RC_4B($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Credit($this->config);
     $body = $this->data('Credit4');
     $body['Transaction']['TransactionID'] = $TransactionID;
-    $result = $request->send($body, 'payment', 'credit', 'credit', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->creditResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->creditResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '4B,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('4B', $requestID);
   }
 
   /**
    * Tests authorization of Visa card with CVV without AVS.
    */
   public function test_L_RC_5() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization5');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('55555 ', $response->litleOnlineResponse->authorizationResponse->authCode);
-    $this->assertEquals(32, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('M', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '5,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('55555 ', $response->authCode);
+    $this->assertEquals(32, $response->fraudResult->avsResult);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('5', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -261,16 +273,17 @@ class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_RC_5
    */
   public function test_L_RC_5A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new AuthorizationCompletion($this->config);
     $body = $this->data('AuthorizationCompletion5');
     $body['Transaction'] = ['TransactionID' => $TransactionID];
-    $result = $request->send($body, 'payment', 'credit', 'authorizationCompletion', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '5A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->captureResponse->TransactionID;
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('5A', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -279,32 +292,34 @@ class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_RC_5A
    */
   public function test_L_RC_5B($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Credit($this->config);
     $body = $this->data('Credit5');
     $body['Transaction']['TransactionID'] = $TransactionID;
-    $result = $request->send($body, 'payment', 'credit', 'credit', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->creditResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->creditResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '5B,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('5B', $requestID);
   }
 
   /**
    * Tests Visa card sale with CVV and AVS.
    */
   public function test_L_RC_6() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale6');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals('11111 ', $response->litleOnlineResponse->saleResponse->authCode);
-    $this->assertEquals('M', $response->litleOnlineResponse->saleResponse->fraudResult->cardValidationResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '6,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('11111 ', $response->authCode);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('6', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -313,30 +328,32 @@ class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_RC_6
    */
   public function test_L_RC_6A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Credit($this->config);
     $body = $this->data('Credit6');
     $body['Transaction']['TransactionID'] = $TransactionID;
-    $result = $request->send($body, 'payment', 'credit', 'credit', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->creditResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->creditResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '6A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('6A', $requestID);
   }
 
   /**
    * Tests MasterCard sale with CVV and AVS.
    */
   public function test_L_RC_7() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale7');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '7,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('7', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -345,28 +362,31 @@ class ReturnsCreditsTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_RC_7
    */
   public function test_L_RC_7A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Credit($this->config);
     $body = $this->data('Credit7');
     $body['Transaction']['TransactionID'] = $TransactionID;
-    $result = $request->send($body, 'payment', 'credit', 'credit', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->creditResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->creditResponse->message);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('7A', $requestID);
   }
 
   /**
    * Tests Visa card return with CVV without AVS.
    */
   public function test_L_RC_8() {
-    $request = new Request($this->config);
+    $request = new CreditReturn($this->config);
     $body = $this->data('Return8');
-    $result = $request->send($body, 'payment', 'credit', 'return', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->creditResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->creditResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '8,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('8', $requestID);
   }
 
   /**

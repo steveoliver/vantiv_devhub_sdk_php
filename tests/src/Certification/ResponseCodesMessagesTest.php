@@ -6,116 +6,118 @@
 
 namespace Vantiv\Test\Certification;
 
-use Vantiv\Request;
+use Vantiv\Request\Credit\Authorization;
 use Vantiv\Test\Configuration;
+use Vantiv\Test\DevHubCertificationTestLogger;
 
 class ResponseCodesMessagesTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
-  private static $prefix = 'L_RRC_';
-  private static $outfile = 'build/logs/devhubresults_L_RRC.txt';
 
   public function __construct() {
     $config = new Configuration();
     $this->config = $config->config;
-  }
-
-  public static function setUpBeforeClass() {
-    file_put_contents(
-      self::$outfile,
-      'Test results for ' . self::$prefix . '* test suite.' . PHP_EOL . str_repeat('=', 44) . PHP_EOL
-    );
+    $prefix = 'L_RRC_';
+    $outfile = 'build/logs/devhubresults_L_RRC.txt';
+    $this->logger = new DevHubCertificationTestLogger($prefix, $outfile);
   }
 
   public function test_L_RRC_1() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization1');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals(00, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '1,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals(00, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('1', $requestID);
+    return $response->TransactionID;
   }
 
   public function test_L_RRC_2() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization2');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals(00, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '2,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals(00, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('2', $requestID);
+    return $response->TransactionID;
   }
 
   public function test_L_RRC_3() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization3');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals(00, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '3,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals(00, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('3', $requestID);
+    return $response->TransactionID;
   }
 
   public function test_L_RRC_4() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization4');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals(00, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '4,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals(00, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('4', $requestID);
+    return $response->TransactionID;
   }
 
   public function test_L_RRC_5() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization5');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(120, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals(00, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Call Issuer', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '5,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(120, $response->response);
+    $this->assertEquals(02, $response->fraudResult->avsResult);
+    $this->assertEquals('Call Issuer', $response->message);
+    $this->logger->log('5', $requestID);
+    return $response->TransactionID;
   }
 
   public function test_L_RRC_6() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization6');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(123, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals(00, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Call Discover', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '6,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(123, $response->response);
+    $this->assertEquals(00, $response->fraudResult->avsResult);
+    $this->assertEquals('Call Discover', $response->message);
+    $this->logger->log('6', $requestID);
+    return $response->TransactionID;
   }
 
   public function test_L_RRC_7() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization7');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals(00, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Call Issuer', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '7,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(120, $response->response);
+    $this->assertEquals(00, $response->fraudResult->avsResult);
+    $this->assertEquals('Call Issuer', $response->message);
+    $this->logger->log('7', $requestID);
+    return $response->TransactionID;
   }
 
   /**

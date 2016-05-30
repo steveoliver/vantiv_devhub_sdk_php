@@ -9,6 +9,7 @@
 namespace Vantiv\Request\Credit;
 
 use Vantiv\Configuration;
+use Vantiv\Response\Credit\CreditReturnResponse;
 use Vantiv\Request;
 
 class CreditReturn extends Request {
@@ -21,6 +22,20 @@ class CreditReturn extends Request {
       ->setProxy('credit')
       ->setEndpoint('return')
       ->setMethod('POST');
+  }
+
+  /**
+   * Overrides parent response to return a CreditReturnResponse object.
+   *
+   * @param $response
+   *
+   * @return array
+   */
+  protected function response(array $response) {
+    return [
+      'response' => new CreditReturnResponse($response['response']),
+      'http_code' => $response['http_code']
+    ];
   }
 
 }

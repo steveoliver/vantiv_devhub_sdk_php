@@ -6,25 +6,20 @@
 
 namespace Vantiv\Test\Certification;
 
-use Vantiv\Request;
+use Vantiv\Request\Credit\Authorization;
 use Vantiv\Test\Configuration;
+use Vantiv\Test\DevHubCertificationTestLogger;
 
 class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
-  private static $prefix = 'L_AVSCV_';
-  private static $outfile = 'build/logs/devhubresults_L_AVSCV.txt';
 
   public function __construct() {
     $config = new Configuration();
     $this->config = $config->config;
-  }
-
-  public static function setUpBeforeClass() {
-    file_put_contents(
-      self::$outfile,
-      'Test results for ' . self::$prefix . '* test suite.' . PHP_EOL . str_repeat('=', 44) . PHP_EOL
-    );
+    $prefix = 'L_AVSCV_';
+    $outfile = 'build/logs/devhubresults_L_AVSCV.txt';
+    $this->logger = new DevHubCertificationTestLogger($prefix, $outfile);
   }
 
   /**
@@ -32,18 +27,19 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
    * (U: Issuer not certified for CVV2 processing and AVS Result 00: 5-Digit zip and address match)
    */
   public function test_L_AVSCV_1() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization1');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('U', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(00, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals('654321', $response->litleOnlineResponse->authorizationResponse->authCode);
-    file_put_contents(self::$outfile, self::$prefix . '1,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('U', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(00, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals('654321', $response->authCode);
+    $this->logger->log('1', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -51,18 +47,19 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
    * (M: Match and AVS Result 01: 9-Digit zip and address match)
    */
   public function test_L_AVSCV_2() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization2');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('M', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(01, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals('654321', $response->litleOnlineResponse->authorizationResponse->authCode);
-    file_put_contents(self::$outfile, self::$prefix . '2,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(01, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals('654321', $response->authCode);
+    $this->logger->log('2', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -70,18 +67,19 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
    * (M: Match and AVS Result 02: Postal code and address match)
    */
   public function test_L_AVSCV_3() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization3');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('M', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(02, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals('654321', $response->litleOnlineResponse->authorizationResponse->authCode);
-    file_put_contents(self::$outfile, self::$prefix . '3,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(02, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals('654321', $response->authCode);
+    $this->logger->log('3', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -90,18 +88,19 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
    * CVV2/CVC2/CID is not present and AVS Result 10: Postal code and address match)
    */
   public function test_L_AVSCV_4() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization4');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('S', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(10, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals('654321', $response->litleOnlineResponse->authorizationResponse->authCode);
-    file_put_contents(self::$outfile, self::$prefix . '4,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('S', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(10, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals('654321', $response->authCode);
+    $this->logger->log('4', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -109,18 +108,19 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
    * (M: Match and AVS Result 11: 9-Digit zip matches, address does not match)
    */
   public function test_L_AVSCV_5() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization5');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('M', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(11, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals('654321', $response->litleOnlineResponse->authorizationResponse->authCode);
-    file_put_contents(self::$outfile, self::$prefix . '5,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(11, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals('654321', $response->authCode);
+    $this->logger->log('5', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -128,18 +128,19 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
    * (M: Match and AVS Result 12: Zip does not match, address matches)
    */
   public function test_L_AVSCV_6() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization6');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('M', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(12, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals('654321', $response->litleOnlineResponse->authorizationResponse->authCode);
-    file_put_contents(self::$outfile, self::$prefix . '6,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(12, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals('654321', $response->authCode);
+    $this->logger->log('6', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -147,18 +148,19 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
    * (M: Match and AVS Result 13: Postal code does not match, address matches)
    */
   public function test_L_AVSCV_7() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization7');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('M', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(13, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals('654321', $response->litleOnlineResponse->authorizationResponse->authCode);
-    file_put_contents(self::$outfile, self::$prefix . '7,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(13, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals('654321', $response->authCode);
+    $this->logger->log('7', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -166,18 +168,19 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
    * (N: No Match and AVS Result 14: Postal code matches, address not verified)
    */
   public function test_L_AVSCV_8() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization8');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(358, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('N', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(14, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Restricted by Litle due to security code mismatch', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals('654321', $response->litleOnlineResponse->authorizationResponse->authCode);
-    file_put_contents(self::$outfile, self::$prefix . '8,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(358, $response->response);
+    $this->assertEquals('N', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(14, $response->fraudResult->avsResult);
+    $this->assertEquals('Restricted by Litle due to security code mismatch', $response->message);
+    $this->assertEquals('654321', $response->authCode);
+    $this->logger->log('8', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -185,18 +188,19 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
    * (N: No Match and AVS Result 20: Neither zip nor address match)
    */
   public function test_L_AVSCV_9() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization9');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(358, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('N', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(20, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Restricted by Litle due to security code mismatch', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals('654321', $response->litleOnlineResponse->authorizationResponse->authCode);
-    file_put_contents(self::$outfile, self::$prefix . '9,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(358, $response->response);
+    $this->assertEquals('N', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(20, $response->fraudResult->avsResult);
+    $this->assertEquals('Restricted by Litle due to security code mismatch', $response->message);
+    $this->assertEquals('654321', $response->authCode);
+    $this->logger->log('9', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -204,18 +208,19 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
    * (P: Not Processed and AVS Result 30: AVS service not supported by issuer)
    */
   public function test_L_AVSCV_10() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization10');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('P', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(30, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals('654321', $response->litleOnlineResponse->authorizationResponse->authCode);
-    file_put_contents(self::$outfile, self::$prefix . '10,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('P', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(30, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals('654321', $response->authCode);
+    $this->logger->log('10', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -223,18 +228,19 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
    * (U: Issuer is not certified for CVV2/CVC2/CID processing and 31: AVS system not available)
    */
   public function test_L_AVSCV_11() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization11');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('U', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(31, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals('654321', $response->litleOnlineResponse->authorizationResponse->authCode);
-    file_put_contents(self::$outfile, self::$prefix . '11,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('U', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(31, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals('654321', $response->authCode);
+    $this->logger->log('11', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -243,18 +249,19 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
    * CVV2/CVC2/CID is not present and 32: Address unavailable)
    */
   public function test_L_AVSCV_12() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization12');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('S', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(32, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals('654321', $response->litleOnlineResponse->authorizationResponse->authCode);
-    file_put_contents(self::$outfile, self::$prefix . '12,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('S', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(32, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals('654321', $response->authCode);
+    $this->logger->log('12', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -262,18 +269,19 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
    * (P: Not Processed and 34: AVS not performed)
    */
   public function test_L_AVSCV_13() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization13');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('P', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(34, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals('654321', $response->litleOnlineResponse->authorizationResponse->authCode);
-    file_put_contents(self::$outfile, self::$prefix . '13,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('P', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(34, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals('654321', $response->authCode);
+    $this->logger->log('13', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -281,17 +289,18 @@ class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
    * (N: No Match and 01: 9-Digit zip and address match)
    */
   public function test_L_AVSCV_14() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization14');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(352, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('N', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals('Decline CVV2/CID Fail', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals(20, $response->litleOnlineResponse->authorizationResponse->fraudResult->avsResult);
-    file_put_contents(self::$outfile, self::$prefix . '14,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(352, $response->response);
+    $this->assertEquals('N', $response->fraudResult->cardValidationResult);
+    $this->assertEquals('Decline CVV2/CID Fail', $response->message);
+    $this->assertEquals(20, $response->fraudResult->avsResult);
+    $this->logger->log('14', $requestID);
+    return $response->TransactionID;
   }
 
   /**

@@ -6,48 +6,47 @@
 
 namespace Vantiv\Test\Certification;
 
-use Vantiv\Request;
+use Vantiv\Request\Check\Sale as CheckSale;
+use Vantiv\Request\Check\CheckReturn;
+use Vantiv\Request\Credit\Authorization;
+use Vantiv\Request\Services\PaymentAccountCreate;
 use Vantiv\Test\Configuration;
+use Vantiv\Test\DevHubCertificationTestLogger;
 
 class TokenTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
-  private static $prefix = 'L_T_';
-  private static $outfile = 'build/logs/devhubresults_L_T.txt';
 
   public function __construct() {
     $config = new Configuration();
     $this->config = $config->config;
-  }
-
-  public static function setUpBeforeClass() {
-    file_put_contents(
-      self::$outfile,
-      'Test results for ' . self::$prefix . '* test suite.' . PHP_EOL . str_repeat('=', 44) . PHP_EOL
-    );
+    $prefix = 'L_T_';
+    $outfile = 'build/logs/devhubresults_L_T.txt';
+    $this->logger = new DevHubCertificationTestLogger($prefix, $outfile);
   }
 
   /**
    * Tests successful payment account creation with Visa without CVV without AVS.
    */
   public function test_L_T_1() {
-    $request = new Request($this->config);
+    $request = new PaymentAccountCreate($this->config);
     $body = $this->data('PaymentAccountCreate1');
-    $result = $request->send($body, 'payment', 'services', 'paymentAccountCreate', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '1,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('1', $requestID);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertContains($response->litleOnlineResponse->registerTokenResponse->response, [
+    $this->assertContains($response->response, [
       801,
       802
     ]);
-    $this->assertContains($response->litleOnlineResponse->registerTokenResponse->bin, [
+    $this->assertContains($response->bin, [
       445711,
       445701
     ]);
-//    $this->assertEquals('xxxxxxxxxxxx0123', $response->litleOnlineResponse->registerTokenResponse->PaymentAccountID);
-    $this->assertEquals('VI', $response->litleOnlineResponse->registerTokenResponse->Type);
-    $this->assertContains($response->litleOnlineResponse->registerTokenResponse->message, [
+//    $this->assertEquals('xxxxxxxxxxxx0123', $response->PaymentAccountID);
+    $this->assertEquals('VI', $response->Type);
+    $this->assertContains($response->message, [
       'Account number was successfully registered',
       'Account number was previously registered'
     ]);
@@ -57,111 +56,120 @@ class TokenTest extends \PHPUnit_Framework_TestCase {
    * Tests failed payment account creation with Visa (Invalid credit card number).
    */
   public function test_L_T_2() {
-    $request = new Request($this->config);
+    $request = new PaymentAccountCreate($this->config);
     $body = $this->data('PaymentAccountCreate2');
-    $result = $request->send($body, 'payment', 'services', 'paymentAccountCreate', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '2,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('2', $requestID);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(820, $response->litleOnlineResponse->registerTokenResponse->response);
-    $this->assertEquals('Credit card number was invalid', $response->litleOnlineResponse->registerTokenResponse->message);
+    $this->assertEquals(820, $response->response);
+    $this->assertEquals('Credit card number was invalid', $response->message);
   }
 
   /**
    * Tests failed payment account creation with Visa (Account number previously registered).
    */
   public function test_L_T_3() {
-    $request = new Request($this->config);
+    $request = new PaymentAccountCreate($this->config);
     $body = $this->data('PaymentAccountCreate3');
-    $result = $request->send($body, 'payment', 'services', 'paymentAccountCreate', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '3,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('3', $requestID);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(802, $response->litleOnlineResponse->registerTokenResponse->response);
-    $this->assertEquals(445711, $response->litleOnlineResponse->registerTokenResponse->bin);
-    $this->assertEquals('Account number was previously registered', $response->litleOnlineResponse->registerTokenResponse->message);
+    $this->assertEquals(802, $response->response);
+    $last4 = substr($body['Card']['AccountNumber'], -4);
+    $this->assertTrue(substr($response->PaymentAccountID, -4) == $last4);
+    $this->assertEquals(445711, $response->bin);
+    $this->assertEquals('Account number was previously registered', $response->message);
   }
 
   /**
    * Tests successful payment account creation with Checking account.
    */
   public function test_L_T_4() {
-    $request = new Request($this->config);
+    $request = new PaymentAccountCreate($this->config);
     $body = $this->data('PaymentAccountCreate4');
-    $result = $request->send($body, 'payment', 'services', 'paymentAccountCreate', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '4,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('4', $requestID);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(801, $response->litleOnlineResponse->registerTokenResponse->response);
-    $this->assertEquals(998, $response->litleOnlineResponse->registerTokenResponse->eCheckAccountSuffix);
-    $this->assertEquals('Account number was successfully registered', $response->litleOnlineResponse->registerTokenResponse->message);
-    $this->assertEquals('EC', $response->litleOnlineResponse->registerTokenResponse->Type);
+    $this->assertContains($response->response, [801, 802]);
+    $this->assertEquals(998, $response->eCheckAccountSuffix);
+    $this->assertContains($response->message, ['Account number was successfully registered','Account number was previously registered']);
+    $this->assertEquals('EC', $response->Type);
   }
 
   /**
    * Tests failed payment account creation with Checking account (Invalid routing number).
    */
   public function test_L_T_5() {
-    $request = new Request($this->config);
+    $request = new PaymentAccountCreate($this->config);
     $body = $this->data('PaymentAccountCreate5');
-    $result = $request->send($body, 'payment', 'services', 'paymentAccountCreate', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '5,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('5', $requestID);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(900, $response->litleOnlineResponse->registerTokenResponse->response);
-    $this->assertEquals('Invalid Bank Routing Number', $response->litleOnlineResponse->registerTokenResponse->message);
+    $this->assertEquals(900, $response->response);
+    $this->assertEquals('Invalid Bank Routing Number', $response->message);
   }
 
   /**
    * Tests successful payment account creation with MasterCard authorization.
    */
   public function test_L_T_6() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization6');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '6,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('6', $requestID);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals(801, $response->litleOnlineResponse->authorizationResponse->tokenResponseCode);
-    $this->assertEquals(543510, $response->litleOnlineResponse->authorizationResponse->tokenResponse->bin);
-    $this->assertEquals(1112000188100196, $response->litleOnlineResponse->authorizationResponse->tokenResponse->PaymentAccountID);
-    $this->assertEquals('Account number was successfully registered', $response->litleOnlineResponse->authorizationResponse->tokenResponse->tokenMessage);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals(000, $response->response);
+    $this->assertContains($response->tokenResponse->tokenResponseCode, [801, 802]);
+    $this->assertEquals(543510, $response->tokenResponse->bin);
+    $this->assertEquals(1112000188100196, $response->tokenResponse->PaymentAccountID);
+    $this->assertContains($response->tokenResponse->tokenMessage, ['Account number was successfully registered','Account number was previously registered']);
   }
 
   /**
    * Tests failed payment account creation with MasterCard authorization (Invalid account number).
    */
   public function test_L_T_7() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization7');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '7,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('7', $requestID);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals('Invalid Account Number', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals(301, $response->litleOnlineResponse->authorizationResponse->response);
+    $this->assertEquals('Invalid Account Number', $response->message);
+    $this->assertEquals(301, $response->response);
   }
 
   /**
    * Tests failed payment account creation but successful MasterCard authorization (Account previously registered).
    */
   public function test_L_T_8() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization8');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '8,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('8', $requestID);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals(802, $response->litleOnlineResponse->authorizationResponse->tokenResponseCode);
-    $this->assertEquals('MC', $response->litleOnlineResponse->authorizationResponse->tokenResponse->Type);
-    $this->assertEquals(543510, $response->litleOnlineResponse->authorizationResponse->tokenResponse->bin);
-    $this->assertEquals(1112000188100196, $response->litleOnlineResponse->authorizationResponse->tokenResponse->PaymentAccountID);
-    $this->assertEquals('Account number was previously registered', $response->litleOnlineResponse->authorizationResponse->tokenResponse->tokenMessage);
-    return $response->litleOnlineResponse->authorizationResponse->tokenResponse->PaymentAccountID;
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals(802, $response->tokenResponse->tokenResponseCode);
+    $this->assertEquals('MC', $response->tokenResponse->Type);
+    $this->assertEquals(543510, $response->tokenResponse->bin);
+    $this->assertEquals(1112000188100196, $response->tokenResponse->PaymentAccountID);
+    $this->assertEquals('Account number was previously registered', $response->tokenResponse->tokenMessage);
+    return $response->tokenResponse->PaymentAccountID;
   }
 
   /**
@@ -170,117 +178,126 @@ class TokenTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_T_8
    */
   public function test_L_T_9($paymentAccountID) {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization9');
     // Add PaymentAccount from previous authorization / account creation.
     // PaymentAccountID used instead of Card.CardNumber.
     $body['PaymentAccount'] = ['PaymentAccountID' => $paymentAccountID];
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '9,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('9', $requestID);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals(000, $response->response);
   }
 
   /**
    * Tests failed authorization using wrong PaymentAccountID (Token not found).
    */
   public function test_L_T_10() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization10');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '10,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('10', $requestID);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(822, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('Token was not found', $response->litleOnlineResponse->authorizationResponse->message);
+    $this->assertEquals(822, $response->response);
+    $this->assertEquals('Token was not found', $response->message);
   }
 
   /**
    * Tests failed authorization using wrong PaymentAccountID (Token not found).
    */
   public function test_L_T_11() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization11');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '11,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('11', $requestID);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(823, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('Token was invalid', $response->litleOnlineResponse->authorizationResponse->message);
+    $this->assertEquals(823, $response->response);
+    $this->assertEquals('Token was invalid', $response->message);
   }
 
   /**
    * Tests successful payment account creation with eCheck sale transaction.
    */
   public function test_L_T_12() {
-    $request = new Request($this->config);
+    $request = new CheckSale($this->config);
     $body = $this->data('Sale12');
-    $result = $request->send($body, 'payment', 'check', 'sale', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '12,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('12', $requestID);
+    echo "L_T_12";
+    var_dump($response);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->echeckSalesResponse->message);
-    $this->assertEquals(000, $response->litleOnlineResponse->echeckSalesResponse->response);
-    $this->assertEquals(801, $response->litleOnlineResponse->echeckSalesResponse->tokenResponse->tokenResponseCode);
-    $this->assertEquals(003, $response->litleOnlineResponse->echeckSalesResponse->tokenResponse->eCheckAccountSuffix);
-    $this->assertEquals('EC', $response->litleOnlineResponse->echeckSalesResponse->tokenResponse->Type);
-    $this->assertEquals('Account number was successfully registered', $response->litleOnlineResponse->echeckSalesResponse->tokenResponse->tokenMessage);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals(801, $response->tokenResponseCode);
+    $this->assertEquals(003, $response->tokenResponse->eCheckAccountSuffix);
+    $this->assertEquals('EC', $response->tokenResponse->Type);
+    $this->assertEquals('Account number was successfully registered', $response->tokenResponse->tokenMessage);
   }
 
   /**
    * Tests successful payment account creation with eCheck sale transaction.
    */
   public function test_L_T_13() {
-    $request = new Request($this->config);
+    $request = new CheckSale($this->config);
     $body = $this->data('Sale13');
-    $result = $request->send($body, 'payment', 'check', 'sale', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '13,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('13', $requestID);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->echeckSalesResponse->message);
-    $this->assertEquals(000, $response->litleOnlineResponse->echeckSalesResponse->response);
-    $this->assertEquals(801, $response->litleOnlineResponse->echeckSalesResponse->tokenResponse->tokenResponseCode);
-    $this->assertEquals(999, $response->litleOnlineResponse->echeckSalesResponse->tokenResponse->eCheckAccountSuffix);
-    $this->assertEquals('EC', $response->litleOnlineResponse->echeckSalesResponse->tokenResponse->Type);
-    $this->assertEquals('Account number was successfully registered', $response->litleOnlineResponse->echeckSalesResponse->tokenResponse->tokenMessage);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals(801, $response->tokenResponse->tokenResponseCode);
+    $this->assertEquals(999, $response->tokenResponse->eCheckAccountSuffix);
+    $this->assertEquals('EC', $response->tokenResponse->Type);
+    $this->assertEquals('Account number was successfully registered', $response->tokenResponse->tokenMessage);
   }
 
   /**
    * Tests successful payment account creation with eCheck return transaction.
    */
   public function test_L_T_14() {
-    $request = new Request($this->config);
+    $request = new CheckReturn($this->config);
     $body = $this->data('Return14');
-    $result = $request->send($body, 'payment', 'check', 'return', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '14,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('14', $requestID);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->echeckCreditResponse->message);
-    $this->assertEquals(000, $response->litleOnlineResponse->echeckCreditResponse->response);
-    $this->assertEquals(801, $response->litleOnlineResponse->echeckCreditResponse->tokenResponse->tokenResponseCode);
-    $this->assertEquals(999, $response->litleOnlineResponse->echeckCreditResponse->tokenResponse->eCheckAccountSuffix);
-    $this->assertEquals('EC', $response->litleOnlineResponse->echeckCreditResponse->tokenResponse->Type);
-    $this->assertEquals('Account number was successfully registered', $response->litleOnlineResponse->echeckCreditResponse->tokenResponse->tokenMessage);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals(801, $response->tokenResponse->tokenResponseCode);
+    $this->assertEquals(999, $response->tokenResponse->eCheckAccountSuffix);
+    $this->assertEquals('EC', $response->tokenResponse->Type);
+    $this->assertEquals('Account number was successfully registered', $response->tokenResponse->tokenMessage);
   }
 
   /**
    * Tests successful payment account creation with eCheck sale transaction.
    */
   public function test_L_T_15() {
-    $request = new Request($this->config);
+    $request = new CheckSale($this->config);
     $body = $this->data('Sale15');
-    $result = $request->send($body, 'payment', 'check', 'sale', 'POST');
-    $response = json_decode($result['response']);
-    file_put_contents(self::$outfile, self::$prefix . '15,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
+    $this->logger->log('15', $requestID);
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->echeckSalesResponse->message);
-    $this->assertEquals(000, $response->litleOnlineResponse->echeckSalesResponse->response);
-    $this->assertEquals(801, $response->litleOnlineResponse->echeckSalesResponse->tokenResponse->tokenResponseCode);
-    $this->assertEquals(993, $response->litleOnlineResponse->echeckSalesResponse->tokenResponse->eCheckAccountSuffix);
-    $this->assertEquals('EC', $response->litleOnlineResponse->echeckSalesResponse->tokenResponse->Type);
-    $this->assertEquals('Account number was successfully registered', $response->litleOnlineResponse->echeckSalesResponse->tokenResponse->tokenMessage);
+    $this->assertEquals('Approved', $response->message);
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals(801, $response->tokenResponse->tokenResponseCode);
+    $this->assertEquals(993, $response->tokenResponse->eCheckAccountSuffix);
+    $this->assertEquals('EC', $response->tokenResponse->Type);
+    $this->assertEquals('Account number was successfully registered', $response->tokenResponse->tokenMessage);
   }
 
   /**

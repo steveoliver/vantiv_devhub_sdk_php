@@ -92,37 +92,10 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
     $request = new Request($this->_config);
     $request->setTransactionType('payment', 'credit', 'authorization', 'GET', []);
     $result = $request->send([
-      'Credentials' => [
-        'AcceptorID' => '1147003'
-      ],
-      'Reports' => [
-        'ReportGroup' => '1243'
-      ],
-      'Transaction' => [
-        'ReferenceNumber' => '1',
-        'TransactionAmount' => '101.00',
-        'OrderSource' => 'ecommerce',
-        'CustomerID' => '1'
-      ],
-      'Address' => [
-        'BillingName' => 'Mike J. Hammer',
-        'BillingAddress1' => '2 Main St.',
-        'BillingAddress2' => 'Apt. 222',
-        'BillingCity' => 'Riverside',
-        'BillingState' => 'RI',
-        'BillingZipcode' => '02915',
-        'BillingCountry' => 'US'
-      ],
-      'Card' => [
-        'Type' => 'MC',
-        'CardNumber' => '5112010000000003',
-        'ExpirationMonth' => '02',
-        'ExpirationYear' => '16',
-        'CVV' => '261'
-      ],
-      'Application' => [
-        'ApplicationID' => 's12342'
-      ]
+      'Credentials' => [ ],
+      'Reports' => [ ],
+      'Transaction' => [ ],
+      'Application' => [ ]
     ]);
     $this->assertInstanceOf('Vantiv\Response', $result['response']);
     $this->assertTrue($result['http_code'] >= 200);
@@ -134,37 +107,10 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
   public function testDirectSendSetsTransactionType() {
     $request = new Request($this->_config);
     $request->send([
-      'Credentials' => [
-        'AcceptorID' => '1147003'
-      ],
-      'Reports' => [
-        'ReportGroup' => '1243'
-      ],
-      'Transaction' => [
-        'ReferenceNumber' => '1',
-        'TransactionAmount' => '101.00',
-        'OrderSource' => 'ecommerce',
-        'CustomerID' => '1'
-      ],
-      'Address' => [
-        'BillingName' => 'Mike J. Hammer',
-        'BillingAddress1' => '2 Main St.',
-        'BillingAddress2' => 'Apt. 222',
-        'BillingCity' => 'Riverside',
-        'BillingState' => 'RI',
-        'BillingZipcode' => '02915',
-        'BillingCountry' => 'US'
-      ],
-      'Card' => [
-        'Type' => 'MC',
-        'CardNumber' => '5112010000000003',
-        'ExpirationMonth' => '02',
-        'ExpirationYear' => '16',
-        'CVV' => '261'
-      ],
-      'Application' => [
-        'ApplicationID' => 's12342'
-      ]
+      'Credentials' => [ ],
+      'Reports' => [ ],
+      'Transaction' => [ ],
+      'Application' => [ ]
     ], 'payment', 'credit', 'sale', 'POST', ['foo' => 'bar']);
     $this->assertEquals($request->getCategory(), 'payment');
     $this->assertEquals($request->getProxy(), 'credit');
@@ -178,41 +124,13 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
     $request = new Request($this->_config);
     $request->setTransactionType('payment', 'credit', 'sale', 'POST', ['foo' => 'bar']);
     $result = $request->send([
-      'Credentials' => [
-        'AcceptorID' => '1147003'
-      ],
-      'Reports' => [
-        'ReportGroup' => '1243'
-      ],
-      'Transaction' => [
-        'ReferenceNumber' => '1',
-        'TransactionAmount' => '101.00',
-        'OrderSource' => 'ecommerce',
-        'CustomerID' => '1'
-      ],
-      'Address' => [
-        'BillingName' => 'Mike J. Hammer',
-        'BillingAddress1' => '2 Main St.',
-        'BillingAddress2' => 'Apt. 222',
-        'BillingCity' => 'Riverside',
-        'BillingState' => 'RI',
-        'BillingZipcode' => '02915',
-        'BillingCountry' => 'US'
-      ],
-      'Card' => [
-        'Type' => 'MC',
-        'CardNumber' => '5112010000000003',
-        'ExpirationMonth' => '02',
-        'ExpirationYear' => '16',
-        'CVV' => '261'
-      ],
-      'Application' => [
-        'ApplicationID' => 's12342'
-      ]
+      'Credentials' => [ ],
+      'Reports' => [ ],
+      'Transaction' => [ ],
+      'Application' => [ ]
     ]);
     $this->assertTrue($result['http_code'] >= 200);
     $this->assertInstanceOf('Vantiv\Response', $result['response']);
-    $this->assertObjectHasAttribute('@response', $result['response']->get());
   }
 
 }

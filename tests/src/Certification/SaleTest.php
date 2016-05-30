@@ -7,181 +7,186 @@
 namespace Vantiv\Test\Certification;
 
 use Vantiv\Request;
+use Vantiv\Request\Credit\Sale;
 use Vantiv\Test\Configuration;
+use Vantiv\Test\DevHubCertificationTestLogger;
 
 class SaleTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
-  private static $prefix = 'L_S_';
-  private static $outfile = 'build/logs/devhubresults_L_S.txt';
 
   public function __construct() {
     $config = new Configuration();
     $this->config = $config->config;
-  }
-
-  public static function setUpBeforeClass() {
-    file_put_contents(
-      self::$outfile,
-      'Test results for ' . self::$prefix . '* test suite.' . PHP_EOL . str_repeat('=', 44) . PHP_EOL
-    );
+    $prefix = 'L_S_';
+    $outfile = 'build/logs/devhubresults_L_S.txt';
+    $this->logger = new DevHubCertificationTestLogger($prefix, $outfile);
   }
 
   /**
    * Tests Visa card Sale with AVS and CVV.
    */
   public function test_L_S_1() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale1');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals('11111 ', $response->litleOnlineResponse->saleResponse->authCode);
-    $this->assertEquals(01, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
-    $this->assertEquals('M', $response->litleOnlineResponse->saleResponse->fraudResult->cardValidationResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '1,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('11111 ', $response->authCode);
+    $this->assertEquals(01, $response->fraudResult->avsResult);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('1', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * Tests MasterCard Sale with AVS and CVV.
    */
   public function test_L_S_2() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale2');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals('22222 ', $response->litleOnlineResponse->saleResponse->authCode);
-    $this->assertEquals(10, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
-    $this->assertEquals('M', $response->litleOnlineResponse->saleResponse->fraudResult->cardValidationResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '2,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('22222 ', $response->authCode);
+    $this->assertEquals(10, $response->fraudResult->avsResult);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('2', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * Tests Discover card Sale with AVS and CVV.
    */
   public function test_L_S_3() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale3');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals('33333 ', $response->litleOnlineResponse->saleResponse->authCode);
-    $this->assertEquals(10, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
-    $this->assertEquals('M', $response->litleOnlineResponse->saleResponse->fraudResult->cardValidationResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '3,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('33333 ', $response->authCode);
+    $this->assertEquals(10, $response->fraudResult->avsResult);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('3', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * Tests American Express card Sale with AVS and CVV.
    */
   public function test_L_S_4() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale4');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals('44444 ', $response->litleOnlineResponse->saleResponse->authCode);
-    $this->assertEquals(13, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('44444 ', $response->authCode);
+    $this->assertEquals(13, $response->fraudResult->avsResult);
     // AMEX doesn't return cardValidationResult ("M") like other cards.
-    $this->assertEquals('Approved', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '4,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('4', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * Tests Visa card Sale with CVV without AVS.
    */
   public function test_L_S_5() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale5');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals('55555 ', $response->litleOnlineResponse->saleResponse->authCode);
-    $this->assertEquals(32, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '5,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('55555 ', $response->authCode);
+    $this->assertEquals(32, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('5', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * Tests Visa card Sale with CVV and AVS (Insufficient Funds).
    */
   public function test_L_S_6() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale6');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(110, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals(34, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
-    $this->assertEquals('P', $response->litleOnlineResponse->saleResponse->fraudResult->cardValidationResult);
-    $this->assertEquals('Insufficient Funds', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '6,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(110, $response->response);
+    $this->assertEquals(34, $response->fraudResult->avsResult);
+    $this->assertEquals('P', $response->fraudResult->cardValidationResult);
+    $this->assertEquals('Insufficient Funds', $response->message);
+    $this->logger->log('6', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * Tests MasterCard Sale with CVV and AVS (Invalid Account Number).
    */
   public function test_L_S_7() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale7');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(301, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals(34, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
-    $this->assertEquals('N', $response->litleOnlineResponse->saleResponse->fraudResult->cardValidationResult);
-    $this->assertEquals('Invalid Account Number', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '7,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(301, $response->response);
+    $this->assertEquals(34, $response->fraudResult->avsResult);
+    $this->assertEquals('N', $response->fraudResult->cardValidationResult);
+    $this->assertEquals('Invalid Account Number', $response->message);
+    $this->logger->log('7', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * Tests Discover card Sale with CVV and AVS (Call Discover).
    */
   public function test_L_S_8() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale8');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(123, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals(34, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
-    $this->assertEquals('P', $response->litleOnlineResponse->saleResponse->fraudResult->cardValidationResult);
-    $this->assertEquals('Call Discover', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '8,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(123, $response->response);
+    $this->assertEquals(34, $response->fraudResult->avsResult);
+    $this->assertEquals('P', $response->fraudResult->cardValidationResult);
+    $this->assertEquals('Call Discover', $response->message);
+    $this->logger->log('8', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * Tests American Express card Sale with CVV and AVS (Pick Up Card).
    */
   public function test_L_S_9() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale9');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(303, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals(34, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
-    $this->assertEquals('P', $response->litleOnlineResponse->saleResponse->fraudResult->cardValidationResult);
-    $this->assertEquals('Pick Up Card', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '9,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(303, $response->response);
+    $this->assertEquals(34, $response->fraudResult->avsResult);
+    $this->assertEquals('P', $response->fraudResult->cardValidationResult);
+    $this->assertEquals('Pick Up Card', $response->message);
+    $this->logger->log('9', $requestID);
+    return $response->TransactionID;
   }
 
   /**

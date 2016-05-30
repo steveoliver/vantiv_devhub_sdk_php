@@ -7,41 +7,43 @@
 namespace Vantiv\Test\Certification;
 
 use Vantiv\Request;
+use Vantiv\Request\Credit\Authorization;
+use Vantiv\Request\Credit\AuthorizationCompletion;
+use Vantiv\Request\Credit\Credit;
+use Vantiv\Request\Credit\CreditReturn;
+use Vantiv\Request\Credit\Sale;
+use Vantiv\Request\Credit\Void;
 use Vantiv\Test\Configuration;
+use Vantiv\Test\DevHubCertificationTestLogger;
 
 class VoidTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
-  private static $prefix = 'L_V_';
-  private static $outfile = 'build/logs/devhubresults_L_V.txt';
 
   public function __construct() {
     $config = new Configuration();
     $this->config = $config->config;
-  }
-
-  public static function setUpBeforeClass() {
-    file_put_contents(
-      self::$outfile,
-      'Test results for ' . self::$prefix . '* test suite.' . PHP_EOL . str_repeat('=', 44) . PHP_EOL
-    );
+    $prefix = 'L_V_';
+    $outfile = 'build/logs/devhubresults_L_V.txt';
+    $this->logger = new DevHubCertificationTestLogger($prefix, $outfile);
   }
 
   /**
    * Tests authorization of Visa with CVV and AVS.
    */
   public function test_L_V_1() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization1');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('11111 ', $response->litleOnlineResponse->authorizationResponse->authCode);
-    $this->assertEquals('M', $response->litleOnlineResponse->authorizationResponse->fraudResult->cardValidationResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '1,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('11111 ', $response->authCode);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('1', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -50,16 +52,17 @@ class VoidTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_V_1
    */
   public function test_L_V_1A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new AuthorizationCompletion($this->config);
     $body = $this->data('AuthorizationCompletion1');
     $body['Transaction'] = ['TransactionID' => $TransactionID];
-    $result = $request->send($body, 'payment', 'credit', 'authorizationCompletion', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '1A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->captureResponse->TransactionID;
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('1A', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -68,16 +71,17 @@ class VoidTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_V_1A
    */
   public function test_L_V_1B($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Credit($this->config);
     $body = $this->data('Credit1');
     $body['Transaction']['TransactionID'] = $TransactionID;
-    $result = $request->send($body, 'payment', 'credit', 'credit', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->creditResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->creditResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '1B,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->creditResponse->TransactionID;
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('1B', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -86,33 +90,35 @@ class VoidTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_V_1B
    */
   public function test_L_V_1C($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Void($this->config);
     $body = $this->data('Void1');
     $body['Transaction']['TransactionID'] = $TransactionID;
-    $result = $request->send($body, 'payment', 'credit', 'void', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->voidResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->voidResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '1C,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('1C', $requestID);
   }
 
   /**
    * Tests sale of MasterCard with CVV and AVS.
    */
   public function test_L_V_2() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale2');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals('22222 ', $response->litleOnlineResponse->saleResponse->authCode);
-    $this->assertEquals('M', $response->litleOnlineResponse->saleResponse->fraudResult->cardValidationResult);
-    $this->assertEquals(10, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '2,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('22222 ', $response->authCode);
+    $this->assertEquals('M', $response->fraudResult->cardValidationResult);
+    $this->assertEquals(10, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('2', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -121,31 +127,33 @@ class VoidTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_V_2
    */
   public function test_L_V_2A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Void($this->config);
     $body = $this->data('Void2');
     $body['Transaction'] = ['TransactionID' => $TransactionID];
-    $result = $request->send($body, 'payment', 'credit', 'void', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->voidResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->voidResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '2A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->voidResponse->TransactionID;
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('2A', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * Tests return transaction on Visa card with CVV and no AVS.
    */
   public function test_L_V_3() {
-    $request = new Request($this->config);
+    $request = new CreditReturn($this->config);
     $body = $this->data('Return3');
-    $result = $request->send($body, 'payment', 'credit', 'return', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->creditResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->creditResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '3,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->creditResponse->TransactionID;
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('3', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -154,32 +162,34 @@ class VoidTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_V_3
    */
   public function test_L_V_3A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Void($this->config);
     $body = $this->data('Void3');
     $body['Transaction'] = ['TransactionID' => $TransactionID];
-    $result = $request->send($body, 'payment', 'credit', 'void', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->voidResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->voidResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '3A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->voidResponse->TransactionID;
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('3A', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * Tests Visa card sale with AVS and CVV (Insufficient Funds).
    */
   public function test_L_V_4() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale4');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(110, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals(34, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
-    $this->assertEquals('Insufficient Funds', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '4,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(110, $response->response);
+    $this->assertEquals(34, $response->fraudResult->avsResult);
+    $this->assertEquals('Insufficient Funds', $response->message);
+    $this->logger->log('4', $requestID);
+    return $response->TransactionID;
   }
 
   /**
@@ -188,16 +198,17 @@ class VoidTest extends \PHPUnit_Framework_TestCase {
    * @depends test_L_V_4
    */
   public function test_L_V_4A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Void($this->config);
     $body = $this->data('Void4');
     $body['Transaction'] = ['TransactionID' => $TransactionID];
-    $result = $request->send($body, 'payment', 'credit', 'void', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->voidResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->voidResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '4A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->voidResponse->TransactionID;
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('4A', $requestID);
+    return $response->TransactionID;
   }
 
   /**

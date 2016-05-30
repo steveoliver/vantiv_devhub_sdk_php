@@ -6,81 +6,76 @@
 
 namespace Vantiv\Test\Certification;
 
-use Vantiv\Request;
+use Vantiv\Request\Credit\Sale;
 use Vantiv\Test\Configuration;
+use Vantiv\Test\DevHubCertificationTestLogger;
 
 class AVSResponseTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
-  private static $prefix = 'L_ADR_';
-  private static $outfile = 'build/logs/devhubresults_L_ADR.txt';
 
   public function __construct() {
     $config = new Configuration();
     $this->config = $config->config;
-  }
-
-  public static function setUpBeforeClass() {
-    file_put_contents(
-      self::$outfile,
-      'Test results for ' . self::$prefix . '* test suite.' . PHP_EOL . str_repeat('=', 44) . PHP_EOL
-    );
+    $prefix = 'L_ADR_';
+    $outfile = 'build/logs/devhubresults_L_ADR.txt';
+    $this->logger = new DevHubCertificationTestLogger($prefix, $outfile);
   }
 
   public function test_L_ADR_1() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale1');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
-    print(var_dump($result['response']));
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals(00, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '1,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals(00, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('1', $requestID);
+    return $response->TransactionID;
   }
 
   public function test_L_ADR_2() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale2');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
-    print(var_dump($result['response']));
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals(01, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '2,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals(01, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('2', $requestID);
+    return $response->TransactionID;
   }
 
   public function test_L_ADR_3() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale3');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
-    print(var_dump($result['response']));
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals(10, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '3,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals(10, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('3', $requestID);
+    return $response->TransactionID;
   }
 
   public function test_L_ADR_4() {
-    $request = new Request($this->config);
+    $request = new Sale($this->config);
     $body = $this->data('Sale4');
-    $result = $request->send($body, 'payment', 'credit', 'sale', 'POST');
-    $response = json_decode($result['response']);
-    print(var_dump($result['response']));
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->saleResponse->response);
-    $this->assertEquals(20, $response->litleOnlineResponse->saleResponse->fraudResult->avsResult);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->saleResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '4,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->saleResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals(20, $response->fraudResult->avsResult);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('4', $requestID);
+    return $response->TransactionID;
   }
 
   /**

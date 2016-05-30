@@ -7,8 +7,8 @@
 namespace Vantiv\Request\Credit;
 
 use Vantiv\Configuration;
+use Vantiv\Response\Credit\SaleResponse;
 use Vantiv\Request;
-use Vantiv\Response\SaleResponse;
 
 class Sale extends Request {
 
@@ -23,7 +23,7 @@ class Sale extends Request {
   }
 
   /**
-   * Overrides parent response to send response as a SaleResponse object.
+   * Overrides parent response to return a SaleResponse object.
    *
    * @param $response
    *

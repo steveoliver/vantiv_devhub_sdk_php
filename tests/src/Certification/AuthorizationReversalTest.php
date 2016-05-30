@@ -6,190 +6,199 @@
 
 namespace Vantiv\Test\Certification;
 
-use Vantiv\Request;
+use Vantiv\Request\Credit\Authorization;
+use Vantiv\Request\Credit\AuthorizationCompletion;
+use Vantiv\Request\Credit\Reversal;
 use Vantiv\Test\Configuration;
+use Vantiv\Test\DevHubCertificationTestLogger;
 
 class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];
-  private static $prefix = 'L_AR_';
-  private static $outfile = 'build/logs/devhubresults_L_AR.txt';
 
   public function __construct() {
     $config = new Configuration();
     $this->config = $config->config;
-  }
-
-  public static function setUpBeforeClass() {
-    file_put_contents(
-      self::$outfile,
-      'Test results for ' . self::$prefix . '* test suite.' . PHP_EOL . str_repeat('=', 44) . PHP_EOL
-    );
+    $prefix = 'L_AR_';
+    $outfile = 'build/logs/devhubresults_L_AR.txt';
+    $this->logger = new DevHubCertificationTestLogger($prefix, $outfile);
   }
 
   public function test_L_AR_1() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization1');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '1,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('1', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * @depends test_L_AR_1
    */
   public function test_L_AR_1A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new AuthorizationCompletion($this->config);
     $body = $this->data('AuthorizationCompletion1');
     $body['Transaction']['TransactionID'] = $TransactionID;
-    $result = $request->send($body, 'payment', 'credit', 'authorizationCompletion', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '1A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('1A', $requestID);
   }
 
   /**
    * @depends test_L_AR_1
    */
   public function test_L_AR_1B($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Reversal($this->config);
     $body = $this->data('AuthorizationReversal1');
     $body['Transaction'] = ['TransactionID' => $TransactionID];
-    $result = $request->send($body, 'payment', 'credit', 'reversal', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->authReversalResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->authReversalResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '1B,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('1B', $requestID);
   }
 
   public function test_L_AR_2() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization2');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '2,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('2', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * @depends test_L_AR_2
    */
   public function test_L_AR_2A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Reversal($this->config);
     $body = $this->data('AuthorizationReversal2');
     $body['Transaction'] = ['TransactionID' => $TransactionID];
-    $result = $request->send($body, 'payment', 'credit', 'reversal', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->authReversalResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->authReversalResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '2A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('2A', $requestID);
   }
 
   public function test_L_AR_3() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization3');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '3,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('3', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * @depends test_L_AR_3
    */
   public function test_L_AR_3A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Reversal($this->config);
     $body = $this->data('AuthorizationReversal3');
     $body['Transaction'] = ['TransactionID' => $TransactionID];
-    $result = $request->send($body, 'payment', 'credit', 'reversal', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authReversalResponse->response);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authReversalResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '3A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('3A', $requestID);
   }
 
   public function test_L_AR_4() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization4');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '4,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('4', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * @depends test_L_AR_4
    */
   public function test_L_AR_4A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new AuthorizationCompletion($this->config);
     $body = $this->data('AuthorizationCompletion4');
     $body['Transaction']['TransactionID'] = $TransactionID;
-    $result = $request->send($body, 'payment', 'credit', 'authorizationCompletion', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->captureResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->captureResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '4A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('4A', $requestID);
   }
 
   /**
    * @depends test_L_AR_4
    */
   public function test_L_AR_4B($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Reversal($this->config);
     $body = $this->data('AuthorizationReversal4');
     $body['Transaction']['TransactionID'] = $TransactionID;
-    $result = $request->send($body, 'payment', 'credit', 'reversal', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->authReversalResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->authReversalResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '4B,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('4B', $requestID);
   }
 
   public function test_L_AR_5() {
-    $request = new Request($this->config);
+    $request = new Authorization($this->config);
     $body = $this->data('Authorization5');
-    $result = $request->send($body, 'payment', 'credit', 'authorization', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(000, $response->litleOnlineResponse->authorizationResponse->response);
-    $this->assertEquals('Approved', $response->litleOnlineResponse->authorizationResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '5,' . $response->RequestID . PHP_EOL, FILE_APPEND);
-    return $response->litleOnlineResponse->authorizationResponse->TransactionID;
+    $this->assertEquals(000, $response->response);
+    $this->assertEquals('Approved', $response->message);
+    $this->logger->log('5', $requestID);
+    return $response->TransactionID;
   }
 
   /**
    * @depends test_L_AR_5
    */
   public function test_L_AR_5A($TransactionID) {
-    $request = new Request($this->config);
+    $request = new Reversal($this->config);
     $body = $this->data('AuthorizationReversal5');
     $body['Transaction']['TransactionID'] = $TransactionID;
-    $result = $request->send($body, 'payment', 'credit', 'reversal', 'POST');
-    $response = json_decode($result['response']);
+    $result = $request->send($body);
+    $response = $result['response']->getResponse();
+    $requestID = $result['response']->getRequestID();
     $this->assertEquals(200, $result['http_code']);
-    $this->assertEquals(001, $response->litleOnlineResponse->authReversalResponse->response);
-    $this->assertEquals('Transaction Received', $response->litleOnlineResponse->authReversalResponse->message);
-    file_put_contents(self::$outfile, self::$prefix . '5A,' . $response->RequestID . PHP_EOL, FILE_APPEND);
+    $this->assertEquals(001, $response->response);
+    $this->assertEquals('Transaction Received', $response->message);
+    $this->logger->log('5A', $requestID);
   }
 
   /**
