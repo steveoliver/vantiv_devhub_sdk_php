@@ -18,7 +18,7 @@ class ReturnTest extends \PHPUnit_Framework_TestCase {
     $this->_config = new Configuration([
       'api_version' => '1',
       'base_url' => 'https://apis.cert.vantiv.com',
-      'license' => 'AAA'
+      'license' => getenv('VANTIV_DEVHUB_LICENSE') ?: 'AAA'
     ]);
   }
 
