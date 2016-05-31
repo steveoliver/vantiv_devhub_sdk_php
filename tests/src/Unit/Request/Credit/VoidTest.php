@@ -35,4 +35,16 @@ class VoidTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($auth->getMethod(), 'POST');
   }
 
+  public function testResponseObject() {
+    $request = new Void($this->_config);
+    $result = $request->send([
+      'Credentials' => [ ],
+      'Reports' => [ ],
+      'Transaction' => [ ],
+      'Application' => [ ]
+    ]);
+    $response = $result['response'];
+    $this->assertInstanceOf('Vantiv\Response\Credit\VoidResponse', $response);
+  }
+
 }

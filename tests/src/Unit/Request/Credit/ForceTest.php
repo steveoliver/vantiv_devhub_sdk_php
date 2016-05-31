@@ -44,7 +44,7 @@ class ForceTest extends \PHPUnit_Framework_TestCase {
       'Application' => []
     ]);
     $response = $result['response'];
-    $this->assertInstanceOf('Vantiv\Response\ForceCaptureResponse', $response);
+    $this->assertInstanceOf('Vantiv\Response\Credit\ForceCaptureResponse', $response);
   }
 
 }

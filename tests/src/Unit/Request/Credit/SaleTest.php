@@ -43,7 +43,7 @@ class SaleTest extends \PHPUnit_Framework_TestCase {
       'Application' => [ ]
     ]);
     $response = $result['response'];
-    $this->assertInstanceOf('Vantiv\Response\SaleResponse', $response);
+    $this->assertInstanceOf('Vantiv\Response\Credit\SaleResponse', $response);
   }
 
 }

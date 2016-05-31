@@ -17,7 +17,7 @@ class ReturnTest extends \PHPUnit_Framework_TestCase {
   protected function setUp() {
     $this->_config = new Configuration([
       'api_version' => '1',
-      'base_url' => 'https://cert.apis.vantiv.com',
+      'base_url' => 'https://apis.cert.vantiv.com',
       'license' => 'AAA'
     ]);
   }
@@ -33,6 +33,18 @@ class ReturnTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($auth->getProxy(), 'credit');
     $this->assertEquals($auth->getEndpoint(), 'return');
     $this->assertEquals($auth->getMethod(), 'POST');
+  }
+
+  public function testResponseObject() {
+    $request = new CreditReturn($this->_config);
+    $result = $request->send([
+      'Credentials' => [ ],
+      'Reports' => [ ],
+      'Transaction' => [ ],
+      'Application' => [ ]
+    ]);
+    $response = $result['response'];
+    $this->assertInstanceOf('Vantiv\Response\Credit\CreditReturnResponse', $response);
   }
 
 }

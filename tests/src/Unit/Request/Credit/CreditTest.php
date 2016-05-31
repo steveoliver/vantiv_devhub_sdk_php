@@ -44,7 +44,7 @@ class CreditTest extends \PHPUnit_Framework_TestCase {
       'Application' => []
     ]);
     $response = $result['response'];
-    $this->assertInstanceOf('Vantiv\Response\CreditResponse', $response);
+    $this->assertInstanceOf('Vantiv\Response\Credit\CreditResponse', $response);
   }
 
 }
