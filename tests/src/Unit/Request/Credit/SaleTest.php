@@ -37,13 +37,43 @@ class SaleTest extends \PHPUnit_Framework_TestCase {
   public function testResponseObject() {
     $request = new Sale($this->_config);
     $result = $request->send([
-      'Credentials' => [ ],
-      'Reports' => [ ],
-      'Transaction' => [ ],
-      'Application' => [ ]
+      'Credentials' => [
+        'AcceptorID' => '1147003'
+      ],
+      'Reports' => [
+        'ReportGroup' => '1243'
+      ],
+      'Transaction' => [
+        'ReferenceNumber' => '1',
+        'TransactionAmount' => '101.00',
+        'OrderSource' => 'ecommerce',
+        'CustomerID' => '1'
+      ],
+      'Address' => [
+        'BillingName' => 'Jane Murray',
+        'BillingAddress1' => '7 Main St.',
+        'BillingCity' => 'Amesbury',
+        'BillingState' => 'MA',
+        'BillingZipcode' => '01913',
+        'BillingCountry' => 'US'
+      ],
+      'Card' => [
+        'Type' => 'MC',
+        'CardNumber' => '5112010100000002',
+        'ExpirationMonth' => '07',
+        'ExpirationYear' => '16',
+        'CVV' => '251'
+      ],
+      'Application' => [
+        'ApplicationID' => 's12347'
+      ]
     ]);
     $response = $result['response'];
+    $saleResponse = $response->getResponse();
     $this->assertInstanceOf('Vantiv\Response\Credit\SaleResponse', $response);
+    $this->assertObjectNotHasAttribute('litleOnlineResponse', $saleResponse);
+    $this->assertObjectHasAttribute('@id', $saleResponse);
+    $this->assertEquals('s12347', $saleResponse->{'@id'});
   }
 
 }
