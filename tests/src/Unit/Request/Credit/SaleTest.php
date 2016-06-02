@@ -9,7 +9,7 @@ namespace Vantiv\Test\Unit\Request\Credit;
 use Vantiv\Configuration;
 use Vantiv\Request\Credit\Sale;
 
-class SaleTest extends \PHPUnit_Framework_TestCase {
+class SaleUnitTest extends \PHPUnit_Framework_TestCase {
 
   /** @var Configuration */
   protected $_config = NULL;

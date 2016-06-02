@@ -9,7 +9,7 @@ namespace Vantiv\Test\Unit\Request\Credit;
 use Vantiv\Configuration;
 use Vantiv\Request\Credit\Force;
 
-class ForceTest extends \PHPUnit_Framework_TestCase {
+class ForceUnitTest extends \PHPUnit_Framework_TestCase {
 
   /** @var Configuration */
   protected $_config = NULL;

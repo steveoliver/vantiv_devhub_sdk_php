@@ -9,7 +9,7 @@ namespace Vantiv\Test\Unit\Request\Credit;
 use Vantiv\Configuration;
 use Vantiv\Request\Credit\CaptureGivenAuth;
 
-class CaptureGivenAuthTest extends \PHPUnit_Framework_TestCase {
+class CaptureGivenAuthUnitTest extends \PHPUnit_Framework_TestCase {
 
   /** @var Configuration */
   protected $_config = NULL;

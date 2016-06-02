@@ -9,7 +9,7 @@ namespace Vantiv\Test\Unit\Request\Credit;
 use Vantiv\Configuration;
 use Vantiv\Request\Credit\CreditReturn;
 
-class ReturnTest extends \PHPUnit_Framework_TestCase {
+class ReturnUnitTest extends \PHPUnit_Framework_TestCase {
 
   /** @var Configuration */
   protected $_config = NULL;

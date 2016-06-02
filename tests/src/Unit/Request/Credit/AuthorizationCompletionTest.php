@@ -9,7 +9,7 @@ namespace Vantiv\Test\Unit\Request\Credit;
 use Vantiv\Configuration;
 use Vantiv\Request\Credit\AuthorizationCompletion;
 
-class AuthorizationCompletionTest extends \PHPUnit_Framework_TestCase {
+class AuthorizationCompletionUnitTest extends \PHPUnit_Framework_TestCase {
 
   /** @var Configuration */
   protected $_config = NULL;
