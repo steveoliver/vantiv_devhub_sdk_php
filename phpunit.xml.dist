@@ -4,6 +4,9 @@
     <testsuite name="Unit_Test">
       <directory>./tests/src/Unit/</directory>
     </testsuite>
+    <testsuite name="Integration_Test">
+      <directory>./tests/src/Integration/</directory>
+    </testsuite>
     <testsuite name="Functional_Test">
       <directory>./tests/src/Functional/</directory>
     </testsuite>

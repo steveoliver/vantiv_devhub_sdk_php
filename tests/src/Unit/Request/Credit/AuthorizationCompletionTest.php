@@ -9,6 +9,11 @@ namespace Vantiv\Test\Unit\Request\Credit;
 use Vantiv\Configuration;
 use Vantiv\Request\Credit\AuthorizationCompletion;
 
+/**
+ * Class AuthorizationCompletionUnitTest
+ * @package Vantiv\Test\Unit\Request\Credit
+ * @group Unit
+ */
 class AuthorizationCompletionUnitTest extends \PHPUnit_Framework_TestCase {
 
   /** @var Configuration */

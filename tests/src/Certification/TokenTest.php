@@ -13,6 +13,11 @@ use Vantiv\Request\Services\PaymentAccountCreate;
 use Vantiv\Test\Configuration;
 use Vantiv\Test\DevHubCertificationTestLogger;
 
+/**
+ * Class TokenTest
+ * @package Vantiv\Test\Certification
+ * @group Certification
+ */
 class TokenTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];

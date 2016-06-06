@@ -29,7 +29,7 @@ install:
   - composer install
 
 script:
-  - phpunit --testsuite=Unit_Test
+  - phpunit --group="Unit,Integration"
   - ./vendor/bin/coveralls -v
 
 notifications:

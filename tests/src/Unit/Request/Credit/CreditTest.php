@@ -9,6 +9,11 @@ namespace Vantiv\Test\Unit\Request\Credit;
 use Vantiv\Configuration;
 use Vantiv\Request\Credit\Credit;
 
+/**
+ * Class CreditUnitTest
+ * @package Vantiv\Test\Unit\Request\Credit
+ * @group Unit
+ */
 class CreditUnitTest extends \PHPUnit_Framework_TestCase {
 
   /** @var Configuration */

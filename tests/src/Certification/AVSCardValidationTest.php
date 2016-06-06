@@ -10,6 +10,11 @@ use Vantiv\Request\Credit\Authorization;
 use Vantiv\Test\Configuration;
 use Vantiv\Test\DevHubCertificationTestLogger;
 
+/**
+ * Class AVSCardValidationTest
+ * @package Vantiv\Test\Certification
+ * @group Certification
+ */
 class AVSCardValidationTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];

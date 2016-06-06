@@ -10,6 +10,11 @@ use Vantiv\Request\Credit\Sale;
 use Vantiv\Test\Configuration;
 use Vantiv\Test\DevHubCertificationTestLogger;
 
+/**
+ * Class AVSResponseTest
+ * @package Vantiv\Test\Certification
+ * @group Certification
+ */
 class AVSResponseTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];

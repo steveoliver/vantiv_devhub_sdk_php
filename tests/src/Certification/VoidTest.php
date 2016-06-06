@@ -16,6 +16,11 @@ use Vantiv\Request\Credit\Void;
 use Vantiv\Test\Configuration;
 use Vantiv\Test\DevHubCertificationTestLogger;
 
+/**
+ * Class VoidTest
+ * @package Vantiv\Test\Certification
+ * @group Certification
+ */
 class VoidTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];

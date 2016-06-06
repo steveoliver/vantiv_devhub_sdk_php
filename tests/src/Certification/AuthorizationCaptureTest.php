@@ -12,6 +12,11 @@ use Vantiv\Request\Credit\AuthorizationCompletion;
 use Vantiv\Test\DevHubCertificationTestLogger;
 use Vantiv\Test\Configuration;
 
+/**
+ * Class AuthorizationCaptureTest
+ * @package Vantiv\Test\Certification
+ * @group Certification
+ */
 class AuthorizationCaptureTest extends \PHPUnit_Framework_TestCase {
   
   private $config = [];

@@ -12,6 +12,11 @@ use Vantiv\Request\Credit\Reversal;
 use Vantiv\Test\Configuration;
 use Vantiv\Test\DevHubCertificationTestLogger;
 
+/**
+ * Class AuthorizationReversalTest
+ * @package Vantiv\Test\Certification
+ * @group Certification
+ */
 class AuthorizationReversalTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];

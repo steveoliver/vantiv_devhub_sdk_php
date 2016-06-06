@@ -9,6 +9,11 @@ namespace Vantiv\Test\Unit\Request\Credit;
 use Vantiv\Configuration;
 use Vantiv\Request\Credit\Force;
 
+/**
+ * Class ForceUnitTest
+ * @package Vantiv\Test\Unit\Request\Credit
+ * @group Unit
+ */
 class ForceUnitTest extends \PHPUnit_Framework_TestCase {
 
   /** @var Configuration */

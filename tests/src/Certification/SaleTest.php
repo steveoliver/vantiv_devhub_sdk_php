@@ -11,6 +11,11 @@ use Vantiv\Request\Credit\Sale;
 use Vantiv\Test\Configuration;
 use Vantiv\Test\DevHubCertificationTestLogger;
 
+/**
+ * Class SaleTest
+ * @package Vantiv\Test\Certification
+ * @group Certification
+ */
 class SaleTest extends \PHPUnit_Framework_TestCase {
 
   private $config = [];

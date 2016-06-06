@@ -9,6 +9,11 @@ namespace Vantiv\Test\Unit\Request\Credit;
 use Vantiv\Configuration;
 use Vantiv\Request\Credit\Void;
 
+/**
+ * Class VoidUnitTest
+ * @package Vantiv\Test\Unit\Request\Credit
+ * @group Unit
+ */
 class VoidUnitTest extends \PHPUnit_Framework_TestCase {
 
   /** @var Configuration */
