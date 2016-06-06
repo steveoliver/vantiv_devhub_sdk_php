@@ -219,10 +219,7 @@ class Request {
    *     returned through $this->response(), optionally overridden per subclass.
    */
   public function send($body = [], $category = NULL, $proxy = NULL, $endpoint = NULL, $method = NULL, $query = []) {
-    if ($missing_keys = array_diff(self::getRequiredElements(), array_keys($body))) {
-      $missing_keys = implode(', ', array_values($missing_keys));
-      throw new Exception($missing_keys . ' keys are missing from request.');
-    }
+    $this->ensureRequiredKeys($body);
     $this->body = $body;
     if (func_num_args() > 1) {
       $this->setTransactionType($category, $proxy, $endpoint, $method, $query);
@@ -257,6 +254,30 @@ class Request {
       'response' => $response,
       'http_code' => curl_getinfo($ch, CURLINFO_HTTP_CODE)
     ]);
+  }
+
+  function ensureRequiredKeys($body) {
+    if ($missing_keys = array_diff(self::getRequiredElements(), array_keys($body))) {
+      $missing_keys = implode(', ', array_values($missing_keys));
+      throw new Exception($missing_keys . ' keys are missing from request.');
+    }
+    $global_required_params = [
+      'Credentials' => ['AcceptorID'],
+      'Reports' => ['ReportGroup'],
+      'Application' => ['ApplicationID']
+    ];
+    $missing_required = [];
+    foreach ($global_required_params as $group => $params) {
+      foreach ($params as $param) {
+        if (empty($body[$group][$param])) {
+          $missing_required[] = $group . '.' . $param;
+        }
+      }
+    }
+    if (!empty($missing_required)) {
+      $missing_required = implode(', ', array_values($missing_required));
+      throw new Exception('Required params ' . $missing_required . ' are missing from request.');
+    }
   }
 
   /**

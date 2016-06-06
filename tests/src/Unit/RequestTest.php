@@ -6,6 +6,7 @@
 
 namespace Vantiv\Test\Unit;
 
+use Exception;
 use Vantiv\Configuration;
 use Vantiv\Request;
 
@@ -64,6 +65,32 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException Exception
+   * @expectedExceptionMessage Required params Credentials.AcceptorID are missing from request.
+   */
+  public function testMissingRequiredGlobalParams() {
+    $request = new Request($this->_config);
+    $request->setTransactionType('payment', 'credit', 'authorization', 'GET', []);
+    $request->send([
+      'Credentials' => [
+        'AcceptorID' => ''
+      ],
+      'Reports' => [
+        'ReportGroup' => '1243'
+      ],
+      'Transaction' => [
+        'ReferenceNumber' => '1',
+        'TransactionAmount' => '101.00',
+        'OrderSource' => 'ecommerce',
+        'CustomerID' => '1'
+      ],
+      'Application' => [
+        'ApplicationID' => 's12341'
+      ]
+    ]);
+  }
+
+  /**
+   * @expectedException Exception
    * @expectedExceptionMessage Credentials, Reports, Transaction, Application keys are missing from request.
    */
   public function testMissingAllRequiredElements() {
@@ -92,10 +119,21 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
     $request = new Request($this->_config);
     $request->setTransactionType('payment', 'credit', 'authorization', 'GET', []);
     $result = $request->send([
-      'Credentials' => [ ],
-      'Reports' => [ ],
-      'Transaction' => [ ],
-      'Application' => [ ]
+      'Credentials' => [
+        'AcceptorID' => '1147003'
+      ],
+      'Reports' => [
+        'ReportGroup' => '1243'
+      ],
+      'Transaction' => [
+        'ReferenceNumber' => '1',
+        'TransactionAmount' => '101.00',
+        'OrderSource' => 'ecommerce',
+        'CustomerID' => '1'
+      ],
+      'Application' => [
+        'ApplicationID' => 's12341'
+      ]
     ]);
     $this->assertInstanceOf('Vantiv\Response', $result['response']);
     $this->assertTrue($result['http_code'] >= 200);
@@ -107,10 +145,21 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
   public function testDirectSendSetsTransactionType() {
     $request = new Request($this->_config);
     $request->send([
-      'Credentials' => [ ],
-      'Reports' => [ ],
-      'Transaction' => [ ],
-      'Application' => [ ]
+      'Credentials' => [
+        'AcceptorID' => '1147003'
+      ],
+      'Reports' => [
+        'ReportGroup' => '1243'
+      ],
+      'Transaction' => [
+        'ReferenceNumber' => '1',
+        'TransactionAmount' => '101.00',
+        'OrderSource' => 'ecommerce',
+        'CustomerID' => '1'
+      ],
+      'Application' => [
+        'ApplicationID' => 's12341'
+      ]
     ], 'payment', 'credit', 'sale', 'POST', ['foo' => 'bar']);
     $this->assertEquals($request->getCategory(), 'payment');
     $this->assertEquals($request->getProxy(), 'credit');
@@ -124,10 +173,21 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
     $request = new Request($this->_config);
     $request->setTransactionType('payment', 'credit', 'sale', 'POST', ['foo' => 'bar']);
     $result = $request->send([
-      'Credentials' => [ ],
-      'Reports' => [ ],
-      'Transaction' => [ ],
-      'Application' => [ ]
+      'Credentials' => [
+        'AcceptorID' => '1147003'
+      ],
+      'Reports' => [
+        'ReportGroup' => '1243'
+      ],
+      'Transaction' => [
+        'ReferenceNumber' => '1',
+        'TransactionAmount' => '101.00',
+        'OrderSource' => 'ecommerce',
+        'CustomerID' => '1'
+      ],
+      'Application' => [
+        'ApplicationID' => 's12341'
+      ]
     ]);
     $this->assertTrue($result['http_code'] >= 200);
     $this->assertInstanceOf('Vantiv\Response', $result['response']);

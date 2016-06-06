@@ -6,6 +6,8 @@
 
 namespace Vantiv;
 
+use Exception;
+
 /**
  * Class Response
  * @package Vantiv
@@ -27,10 +29,23 @@ class Response {
     return $this->response->RequestID;
   }
 
+  public function success() {
+    return $this->failure() == FALSE;
+  }
+
+  public function failure() {
+    return isset($this->response->Error) ? $this->response->Error->Details : FALSE;
+  }
+
   /**
    * @return stdClass The litleOnlineResponse from a Vantiv response.
+   * @throws Exception.
    */
   public function getResponse() {
+    if (!isset($this->response->litleOnlineResponse)) {
+      var_dump($this->response);
+      throw new Exception('litleOnlineResponse not found in this response. Request ID ' . $this->getRequestID());
+    }
     return $this->response->litleOnlineResponse;
   }
 
